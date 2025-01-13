@@ -8,7 +8,6 @@ void c_glDeleteBuffers(GLsizei n, const GLuint *buffers) {
     glDeleteBuffers(n, buffers);
 }
 
-
 void c_glBindBuffer(GLenum target, GLuint buffer) {
     glBindBuffer(target, buffer);
 }

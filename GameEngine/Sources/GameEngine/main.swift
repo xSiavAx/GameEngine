@@ -3,7 +3,6 @@ func main() {
     do {
         let context = try Context.make(glVersion: (major: 3, minor: 3))
         let window = try context.makeWindow(size: ISize(width: 640, height: 480), title: "Hello World")
-        let buffer = VertexBufferObjects()
         var keyBag = Set<AnyReleasable>()
 
         let verticies: [Float] = [
@@ -16,6 +15,9 @@ func main() {
         try context.loadGlad()
         try context.adjustViewport()
         try window.setupResizeHandler()
+
+        // Make context create it?
+        let buffer = VertexBufferObjects()
 
         context.inputProcessor
             .addObserver(key: .ESCAPE, event: .keyUp) { context.currentWindow?.requestClose() }

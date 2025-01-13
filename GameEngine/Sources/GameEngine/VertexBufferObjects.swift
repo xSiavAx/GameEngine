@@ -25,22 +25,25 @@ final class BufferNames {
     private var names: UnsafeBufferPointer<UInt32>
 
     init(count: Int) {
-        let names = UnsafeMutableBufferPointer<UInt32>.allocate(capacity: count)
-
-        c_glGenBuffers(Int32(names.count), names.baseAddress)
-        self.names = UnsafeBufferPointer<UInt32>(names)
+        self.names = Self.initNames(count: count)
     }
 
     func bind(type: UInt32) {
-        forEach {
-            c_glBindBuffer(type, $0)
-        }
+        forEach { c_glBindBuffer(type, $0) }
     }
 
     func forEach(_ block: (UInt32) -> Void) {
         (0..<names.count).forEach {
             block(names[$0])
         }
+    }
+
+    private static func initNames(count: Int) -> UnsafeBufferPointer<UInt32> {
+        let names = UnsafeMutableBufferPointer<UInt32>.allocate(capacity: count)
+
+        c_glGenBuffers(Int32(names.count), names.baseAddress)
+
+        return UnsafeBufferPointer<UInt32>(names)
     }
 
     deinit {
