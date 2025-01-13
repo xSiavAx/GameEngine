@@ -74,7 +74,7 @@ final class Context {
         try requireCurrentWindow().processInput(inputProcessor)
     }
 
-    private func requireCurrentWindow() throws -> Window {
+    func requireCurrentWindow() throws -> Window {
         guard let currentWindow else { throw ContextError.currentWindowDidNotSet }
         return currentWindow
     }
