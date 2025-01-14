@@ -15,7 +15,6 @@ final class VertexBufferObjects {
         let len = MemoryLayout<Float>.size * data.count
 
         data.withUnsafeBufferPointer { buffer in
-            print("Size is \(len)")
             c_glBufferData(C_GL_ARRAY_BUFFER, Int64(len), buffer.baseAddress, C_GL_STATIC_DRAW);
         }   
     }
