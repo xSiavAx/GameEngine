@@ -28,7 +28,9 @@ let package = Package(
                 "C_GLAD"
             ],
             exclude: platform.exclude,
-            resources: platform.resourceToCopy(), 
+            resources: platform.resourceToCopy() + [
+                .copy("Resources/Shaders")
+            ], 
             linkerSettings: platform.linkerSettings()
         )
     ]
@@ -44,7 +46,7 @@ struct PlatformSettings {
     static let windows = PlatformSettings(
         systemLibSuffix: "WIN",
         linkerFlags: ["-lglfw3dll"],
-        copy: ["glfw3.dll"],
+        copy: ["Resources/DynamicLibraries/glfw3.dll"],
         exclude: [] 
     )
 
