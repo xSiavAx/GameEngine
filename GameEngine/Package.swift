@@ -9,6 +9,10 @@ let platform = PlatformSettings.windows
 let platform = PlatformSettings.linux
 #endif
 
+let shaders = [
+    "VertexShader", "FragmentShader"
+]
+
 let package = Package(
     name: "GameEngine",
     dependencies: [
@@ -28,13 +32,10 @@ let package = Package(
                 "C_GLAD"
             ],
             exclude: platform.exclude,
-            resources: platform.resourceToCopy() + [
-                .copy("Resources/Shaders/VertexShader.gs")
-            ], 
+            resources: platform.resourceToCopy() + shaders.asShadersResources(),
             linkerSettings: platform.linkerSettings()
         )
     ]
-    
 )
 
 struct PlatformSettings {
@@ -75,5 +76,11 @@ struct PlatformSettings {
 
     func linkerSettings() -> [LinkerSetting] {
         return [.unsafeFlags(linkerFlags)]
+    }
+}
+
+extension Array where Element == String {
+    func asShadersResources() -> [Resource] {
+        return map { .copy("Resources/Shaders/\($0).gs") }
     }
 }

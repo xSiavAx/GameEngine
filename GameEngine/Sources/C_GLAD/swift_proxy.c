@@ -20,6 +20,10 @@ GLuint c_glCreateShader( GLenum shaderType) {
     return glCreateShader(shaderType);
 }
 
+void c_glDeleteShader(GLuint shader) {
+    glDeleteShader(shader);
+}
+
 void c_glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length) {
     glShaderSource(shader, count, string, length);
 }
@@ -40,6 +44,30 @@ void c_glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLc
     glGetShaderInfoLog(shader, maxLength, length, infoLog);
 }
 
-void c_glDeleteShader(GLuint shader) {
-    glDeleteShader(shader);
+GLuint c_glCreateProgram() {
+    return glCreateProgram();
+}
+
+void c_glDeleteProgram(GLuint program) {
+    glDeleteProgram(program);
+}
+
+void c_glAttachShader(GLuint program, GLuint shader) {
+    glAttachShader(program, shader);
+}
+
+void c_glLinkProgram(GLuint program) {
+    glLinkProgram(program);
+}
+
+void c_glGetProgramiv(GLuint program, GLenum pname, GLint *params) {
+    glGetProgramiv(program, pname, params);
+}
+
+void c_glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog) {
+    glGetProgramInfoLog(program, maxLength, length, infoLog);
+}
+
+void c_glUseProgram(GLuint program) {
+    glUseProgram(program);
 }

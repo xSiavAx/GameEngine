@@ -21,7 +21,12 @@ final class Application {
              0.0,  0.5, 0.0
         ]
         let buffer = VertexBufferObjects()
-        let shader = try ShaderLoader.prepare(kind: C_GL_VERTEX_SHADER, name: "VertexShader")
+        let shaderProgram = ShaderProgram()
+
+        try shaderProgram.use(shaders: [
+            try .make(kind: C_GL_VERTEX_SHADER, name: "VertexShader"),
+            try .make(kind: C_GL_FRAGMENT_SHADER, name: "FragmentShader")
+        ])
 
         bindInput()
 
