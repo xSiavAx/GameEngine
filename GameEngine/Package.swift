@@ -29,7 +29,7 @@ let package = Package(
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + [
-                .copy("Resources/Shaders")
+                .copy("Resources/Shaders/VertexShader.gs")
             ], 
             linkerSettings: platform.linkerSettings()
         )

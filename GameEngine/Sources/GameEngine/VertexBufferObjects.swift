@@ -47,6 +47,7 @@ final class BufferNames {
 
     deinit {
         c_glDeleteBuffers(Int32(names.count), names.baseAddress)
+        names.deallocate()
     }
 }
 
