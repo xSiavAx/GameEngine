@@ -16,6 +16,27 @@ void c_glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usa
     glBufferData(target, size, data, usage);
 }
 
+
+void c_glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer) {
+    glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+void c_glEnableVertexAttribArray(GLuint index) { 
+    glEnableVertexAttribArray(index);
+}
+
+void c_glGenVertexArrays(GLsizei n, GLuint *arrays) {
+    glGenVertexArrays(n, arrays);
+}
+
+void c_glDeleteVertexArrays(GLsizei n, const GLuint *arrays) {
+    glDeleteVertexArrays(n, arrays);
+}
+
+void c_glBindVertexArray(GLuint array) {
+    glBindVertexArray(array);
+}
+
 GLuint c_glCreateShader( GLenum shaderType) {
     return glCreateShader(shaderType);
 }

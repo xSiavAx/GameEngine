@@ -5,6 +5,13 @@ void c_glDeleteBuffers(GLsizei n, const GLuint *buffers);
 void c_glBindBuffer(GLenum target, GLuint buffer);
 void c_glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage);
 
+void c_glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
+void c_glEnableVertexAttribArray(GLuint index);
+void c_glBindVertexArray(GLuint array);
+
+void c_glGenVertexArrays(GLsizei n, GLuint *arrays);
+void c_glDeleteVertexArrays(GLsizei n, const GLuint *arrays);
+
 GLuint c_glCreateShader(  GLenum shaderType);
 void c_glDeleteShader(GLuint shader);
 void c_glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
