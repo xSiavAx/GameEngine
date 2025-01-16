@@ -1,22 +1,6 @@
 import C_GL
 import C_GLAD
 
-final class VertexBufferObject {
-    private var names: VertexBufferNames
-
-    init(types: [UInt32] = [C_GL_ARRAY_BUFFER]) {
-        self.names = VertexBufferNames(types: types)
-    }
-
-    func bind(_ onBind: (_ idx: Int, _ name: VertexBufferName) -> Void) {
-        names.names.enumerated().forEach { idx, name in
-            c_glBindBuffer(name.type, name.id)
-
-            onBind(idx, name)
-        }
-    }
-}
-
 struct VertexBufferName: VertexObjectName {
     struct BoundParams {
         var componentType: UInt32

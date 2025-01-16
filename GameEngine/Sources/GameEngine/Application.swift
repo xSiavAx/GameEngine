@@ -50,7 +50,7 @@ import C_GLAD
 extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
-        let vbo = VertexBufferObject()
+        let vbo = VertexBufferSingle()
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
@@ -81,11 +81,11 @@ extension Application {
             ])
 
             vao.bind { vaoName in
-                vbo.bind { bufferIndex, buffer in
+                vbo.bind { buffer in
                     let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
 
-                    vaoName.linkVertexAttributes(boundParams: params, location: bufferIndex, numberOfComponents: 3)
-                    vaoName.enableAttribute(location: bufferIndex)
+                    vaoName.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
+                    vaoName.enableAttribute(location: 0)
                 }
             }
         }
