@@ -1,3 +1,9 @@
+
+// TODO:
+// Make VertexArrayObject and VertexBufferObject same type with different binding strategies
+// Add to this types addon, which allow to bind data, or to link and enable attrbiutes
+// Make Single variant of this type, to serve as VertexArraySingle serves VertexArrayObject
+
 @MainActor
 final class Application {
     let context: Context
@@ -74,12 +80,12 @@ extension Application {
                 try .make(kind: C_GL_FRAGMENT_SHADER, name: "FragmentShader")
             ])
 
-            vao.bind {
+            vao.bind { vaoName in
                 vbo.bind { bufferIndex, buffer in
                     let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
 
-                    vao.linkVertexAttributes(boundParams: params, location: bufferIndex, numberOfComponents: 3)
-                    vao.enableAttribute(location: bufferIndex)
+                    vaoName.linkVertexAttributes(boundParams: params, location: bufferIndex, numberOfComponents: 3)
+                    vaoName.enableAttribute(location: bufferIndex)
                 }
             }
         }

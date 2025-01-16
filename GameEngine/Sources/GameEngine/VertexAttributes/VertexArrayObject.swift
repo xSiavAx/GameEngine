@@ -8,8 +8,12 @@ final class VertexArraySingle: VertexArrayObject {
         super.init(count: 1)
     }
 
-    func bind(onBind: () -> Void) {
-        super.bind { _ in onBind() }
+    func bind(onBind: (VertexArrayName) -> Void) {
+        super.bind { _, name in onBind(name) }
+    }
+
+    func bind() {
+        self.bind { _ in }
     }
 }
 
@@ -20,16 +24,16 @@ class VertexArrayObject {
         names = VertexArrayNames(count: count)
     }
 
-    func bind(onBind: (Int) -> Void) {
+    func bind(onBind: (Int, VertexArrayName) -> Void) {
         names.names.enumerated().forEach { idx, name in
             c_glBindVertexArray(name.id)
-            onBind(idx)
+            onBind(idx, name)
         }
     }
+}
 
-    func bind() {
-        bind { _ in }
-    }
+struct VertexArrayName: VertexObjectName {
+    let id: UInt32
 
     func linkVertexAttributes(
         boundParams: VertexBufferName.BoundParams,
@@ -50,10 +54,6 @@ class VertexArrayObject {
     func enableAttribute(location: Int) {
         c_glEnableVertexAttribArray(UInt32(location));
     }
-}
-
-struct VertexArrayName: VertexObjectName {
-    let id: UInt32
 }
 
 final class VertexArrayNames: VertexObjectNames<VertexArrayName> {
