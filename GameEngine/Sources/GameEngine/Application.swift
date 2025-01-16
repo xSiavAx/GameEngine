@@ -86,11 +86,11 @@ extension Application {
                     let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
 
                     vaoName.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
+                    vaoName.enableAttribute(location: 0)
                 }
                 ebo.bind { buffer in
                     buffer.add(indices, usage: C_GL_STATIC_DRAW)
                 }
-                vaoName.enableAttribute(location: 0)
             }
         }
 
@@ -100,10 +100,11 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
-                vao.bind()
-                c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_LINE)
-                c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
-
+                vao.draw { vaoName in
+                    // c_glDrawArrays(C_GL_TRIANGLES, 0, 3) // Number of verticies, params.count
+                    c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
+                }
+                
                 window.swapBuffers()
                 context.pollEvents()
             }

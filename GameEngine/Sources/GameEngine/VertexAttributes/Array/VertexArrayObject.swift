@@ -9,10 +9,12 @@ extension VertexArrayObject {
             c_glBindVertexArray($0.id)
         }
     }
-}
 
-extension VertexArraySingle {
-    func bind() {
-        bind { _ in }
+    func bind(onBind: (Name) -> Void) {
+        bind { _, name in onBind(name) }
+    }
+
+    func draw(onDraw: (Name) -> Void) {
+        bind(onBind: onDraw)
     }
 }

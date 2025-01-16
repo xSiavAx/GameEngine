@@ -23,6 +23,14 @@ struct VertexArrayName: VertexObjectName {
     func enableAttribute(location: Int) {
         c_glEnableVertexAttribArray(UInt32(location));
     }
+
+    func withDebugDraw(_ onDraw: () -> Void) {
+        c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_LINE)
+        defer { c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_FILL) }
+        onDraw()
+    }
+
+    func willDraw(array)
 }
 
 final class VertexArrayNames: GLOBjectNames<VertexArrayName> {
