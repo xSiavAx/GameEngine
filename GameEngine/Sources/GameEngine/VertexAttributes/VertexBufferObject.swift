@@ -26,14 +26,14 @@ struct VertexBufferName: VertexObjectName {
     let id: UInt32
     let type: UInt32
 
-    func add(
-        _ data: [Float], 
+    func add<T>(
+        _ data: [T], 
         normalized: Bool,
         usage: UInt32 = C_GL_STATIC_DRAW
     ) -> BoundParams {
         let boundParams = BoundParams(
             componentType: C_GL_FLOAT,
-            sizeOfComponent: MemoryLayout<Float>.size,
+            sizeOfComponent: MemoryLayout<T>.size,
             shouldNormilize: normalized ? C_GL_FALSE : C_GL_TRUE
         )
         data.withUnsafeBufferPointer { buffer in
