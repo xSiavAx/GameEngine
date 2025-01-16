@@ -8,13 +8,11 @@ final class VertexBufferObject {
         self.names = VertexBufferNames(types: types)
     }
 
-    func bind(_ onBind: (_ idx: Int, _ name: inout VertexBufferName) -> Void) {
-        for idx in (0..<names.names.count) {
-            let name = names.names[idx]
-
+    func bind(_ onBind: (_ idx: Int, _ name: VertexBufferName) -> Void) {
+        names.names.enumerated().forEach { idx, name in
             c_glBindBuffer(name.type, name.id)
 
-            onBind(idx, &(names.names[idx]))
+            onBind(idx, name)
         }
     }
 }
@@ -28,7 +26,7 @@ struct VertexBufferName: VertexObjectName {
     let id: UInt32
     let type: UInt32
 
-    mutating func add(
+    func add(
         _ data: [Float], 
         normalized: Bool,
         usage: UInt32 = C_GL_STATIC_DRAW
