@@ -43,7 +43,7 @@ import C_GLAD
 
 extension Application {
     final class RunLoop {
-        let vao = VertexArrayObject()
+        let vao = VertexArraySingle()
         let vbo = VertexBufferObject()
         let shaderProgram = ShaderProgram()
         let context: Context
@@ -58,28 +58,28 @@ extension Application {
         }
 
         func prepare() throws {
+            let vertices: [Float] = [
+                 0.5,  0.5, 0.0,  // top right
+                 0.5, -0.5, 0.0,  // bottom right
+                -0.5, -0.5, 0.0,  // bottom left
+                -0.5,  0.5, 0.0   // top left 
+            ]
+            let indices: [Int] = [
+                0, 1, 3,   // first triangle
+                1, 2, 3    // second triangle
+            ]
+
             try shaderProgram.use(shaders: [
                 try .make(kind: C_GL_VERTEX_SHADER, name: "VertexShader"),
                 try .make(kind: C_GL_FRAGMENT_SHADER, name: "FragmentShader")
-            ]) // MB use sgoulkd be after bvuffer setup and link
+            ])
 
-            vao.bind { arrayIndex in
+            vao.bind {
                 vbo.bind { bufferIndex, buffer in
-                    let params = buffer.add(
-                        [
-                            -0.5, -0.5, 0.0,
-                            0.5, -0.5, 0.0,
-                            0.0,  0.5, 0.0
-                        ], 
-                        normalized: true,
-                        usage: C_GL_STATIC_DRAW
-                    )
-                    vao.linkVertexAttributes(
-                        boundParams: params,
-                        location: bufferIndex,
-                        numberOfComponents: 3
-                    )
-                    vao.enable(location: bufferIndex)
+                    let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
+
+                    vao.linkVertexAttributes(boundParams: params, location: bufferIndex, numberOfComponents: 3)
+                    vao.enableAttribute(location: bufferIndex)
                 }
             }
         }

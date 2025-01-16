@@ -1,8 +1,20 @@
 import C_GL
 import C_GLAD
 
-final class VertexArrayObject {
-    private var names: VertexArrayNames
+final class VertexArraySingle: VertexArrayObject {
+    var name: VertexArrayName { names.names.first! }
+
+    init() {
+        super.init(count: 1)
+    }
+
+    func bind(onBind: () -> Void) {
+        super.bind { _ in onBind() }
+    }
+}
+
+class VertexArrayObject {
+    let names: VertexArrayNames
 
     init(count: Int = 1) {
         names = VertexArrayNames(count: count)
@@ -18,7 +30,6 @@ final class VertexArrayObject {
     func bind() {
         bind { _ in }
     }
-
 
     func linkVertexAttributes(
         boundParams: VertexBufferName.BoundParams,
@@ -36,7 +47,7 @@ final class VertexArrayObject {
         );
     }
 
-    func enable(location: Int) {
+    func enableAttribute(location: Int) {
         c_glEnableVertexAttribArray(UInt32(location));
     }
 }
