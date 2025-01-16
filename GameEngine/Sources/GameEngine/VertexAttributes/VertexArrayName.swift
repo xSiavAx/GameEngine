@@ -25,7 +25,7 @@ struct VertexArrayName: VertexObjectName {
     }
 }
 
-final class VertexArrayNames: VertexObjectNames<VertexArrayName> {
+final class VertexArrayNames: GLOBjectNames<VertexArrayName> {
     init(count: Int) {
         super.init(
             count: count,

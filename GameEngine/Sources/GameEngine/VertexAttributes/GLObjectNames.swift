@@ -2,7 +2,7 @@ protocol VertexObjectName {
     var id: UInt32 { get }
 }
 
-class VertexObjectNames<Name: VertexObjectName> {
+class GLOBjectNames<Name: VertexObjectName> {
     typealias MakeName = (Int, UInt32) -> Name
     typealias OnGenerate = (Int32, UnsafeMutablePointer<UInt32>) -> Void
     typealias OnDelete = (Int32, UnsafePointer<UInt32>) -> Void

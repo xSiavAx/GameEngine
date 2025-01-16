@@ -27,7 +27,7 @@ struct VertexBufferName: VertexObjectName {
     }
 }
 
-final class VertexBufferNames: VertexObjectNames<VertexBufferName> {
+final class VertexBufferNames: GLOBjectNames<VertexBufferName> {
     init(types: [UInt32]) {
         super.init(
             count: types.count,
