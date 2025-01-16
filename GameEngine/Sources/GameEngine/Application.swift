@@ -1,9 +1,4 @@
 
-// TODO:
-// Make VertexArrayObject and VertexBufferObject same type with different binding strategies
-// Add to this types addon, which allow to bind data, or to link and enable attrbiutes
-// Make Single variant of this type, to serve as VertexArraySingle serves VertexArrayObject
-
 @MainActor
 final class Application {
     let context: Context
@@ -50,8 +45,8 @@ import C_GLAD
 extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
-        let vbo = VertexBufferSingle(type: C_GL_ARRAY_BUFFER)
-        let ebo = VertexBufferSingle(type: C_GL_ELEMENT_ARRAY_BUFFER)
+        let vbo = GLBufferSingle(type: C_GL_ARRAY_BUFFER)
+        let ebo = GLBufferSingle(type: C_GL_ELEMENT_ARRAY_BUFFER)
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window

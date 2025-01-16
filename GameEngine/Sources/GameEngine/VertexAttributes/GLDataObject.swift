@@ -1,4 +1,4 @@
-class GLDataObject<Name: VertexObjectName, Names: GLOBjectNames<Name>> {
+class GLDataObject<Name: VertexObjectName, Names: GLObjectNames<Name>> {
     var names: Names
     var bind: (Name) -> Void
 
@@ -16,7 +16,7 @@ class GLDataObject<Name: VertexObjectName, Names: GLOBjectNames<Name>> {
 }
 
 
-final class GLDataSingle<Name: VertexObjectName, Names: GLOBjectNames<Name>>: GLDataObject<Name, Names> {
+final class GLDataSingle<Name: VertexObjectName, Names: GLObjectNames<Name>>: GLDataObject<Name, Names> {
     func bind(onBind: (Name) -> Void) {
         names.names.enumerated().forEach { idx, name in
             super.bind { _, name in onBind(name) }

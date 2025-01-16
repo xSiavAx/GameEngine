@@ -5,7 +5,7 @@ struct VertexArrayName: VertexObjectName {
     let id: UInt32
 
     func linkVertexAttributes(
-        boundParams: VertexBufferName.BoundParams,
+        boundParams: GLBufferName.BoundParams,
         location: Int,
         numberOfComponents: Int,
         offset: UnsafeRawPointer? = nil
@@ -29,11 +29,9 @@ struct VertexArrayName: VertexObjectName {
         defer { c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_FILL) }
         onDraw()
     }
-
-    func willDraw(array)
 }
 
-final class VertexArrayNames: GLOBjectNames<VertexArrayName> {
+final class VertexArrayNames: GLObjectNames<VertexArrayName> {
     init(count: Int) {
         super.init(
             count: count,

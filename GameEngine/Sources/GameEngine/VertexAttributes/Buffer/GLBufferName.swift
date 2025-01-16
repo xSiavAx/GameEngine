@@ -1,7 +1,7 @@
 import C_GL
 import C_GLAD
 
-struct VertexBufferName: VertexObjectName {
+struct GLBufferName: VertexObjectName {
     struct BoundParams {
         var componentType: UInt32
         var sizeOfComponent: Int
@@ -38,11 +38,11 @@ struct VertexBufferName: VertexObjectName {
     }
 }
 
-final class VertexBufferNames: GLOBjectNames<VertexBufferName> {
+final class GLBufferNames: GLObjectNames<GLBufferName> {
     init(types: [UInt32]) {
         super.init(
             count: types.count,
-            makeName: { idx, name in VertexBufferName(id: name, type: types[idx]) },
+            makeName: { idx, name in GLBufferName(id: name, type: types[idx]) },
             generate: { c_glGenBuffers($0, $1) },
             delete: { c_glDeleteBuffers($0, $1) }
         )
