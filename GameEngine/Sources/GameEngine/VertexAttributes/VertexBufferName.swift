@@ -15,15 +15,27 @@ struct VertexBufferName: VertexObjectName {
         normalized: Bool,
         usage: UInt32 = C_GL_STATIC_DRAW
     ) -> BoundParams {
-        let boundParams = BoundParams(
+        let componentSize = add(data, usage: usage)
+
+        return BoundParams(
             componentType: C_GL_FLOAT,
-            sizeOfComponent: MemoryLayout<T>.size,
+            sizeOfComponent: componentSize,
             shouldNormilize: normalized ? C_GL_FALSE : C_GL_TRUE
         )
+    }
+    
+    @discardableResult
+    func add<T>(
+        _ data: [T], 
+        usage: UInt32 = C_GL_STATIC_DRAW
+    ) -> Int {
+        let componentSize = MemoryLayout<T>.size
+
         data.withUnsafeBufferPointer { buffer in
-            c_glBufferData(type, Int64(boundParams.sizeOfComponent * data.count), buffer.baseAddress, usage);
+            print("c_glBufferData \(type), \(Int64(componentSize * data.count)), \(buffer.baseAddress), \(usage)")
+            c_glBufferData(type, Int64(componentSize * data.count), buffer.baseAddress, usage);
         }
-        return boundParams
+        return MemoryLayout<T>.size
     }
 }
 

@@ -96,3 +96,7 @@ void c_glUseProgram(GLuint program) {
 void c_glDrawArrays(GLenum mode, GLint first, GLsizei count) {
     glDrawArrays(mode, first, count);
 }
+
+void c_glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices) {
+    glDrawElements(mode, count, type, indices);
+}

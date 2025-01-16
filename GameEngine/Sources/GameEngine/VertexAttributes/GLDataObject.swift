@@ -23,18 +23,27 @@ class GLDataObject<Name: VertexObjectName, Names: GLOBjectNames<Name>> {
     }
 }
 
-final class GLDataSingle<Name: VertexObjectName, Names: GLOBjectNames<Name>>: GLDataObject<Name, Names> {
-    func bind(onBind: (Name) -> Void) {
-        names.names.enumerated().forEach { idx, name in
-            super.bind { _, name in onBind(name) }
-        }
-    }
-}
-
 extension GLDataObject where Names == VertexArrayNames, Name == VertexArrayName {
     convenience init(count: Int = 1) {
         self.init(names: VertexArrayNames(count: count)) {
             c_glBindVertexArray($0.id)
+        }
+    }
+}
+
+extension GLDataObject where Names == VertexBufferNames, Name == VertexBufferName {
+    convenience init(types: [UInt32]) {
+        self.init(names: VertexBufferNames(types: types)) {
+            print("Bind type: \($0.type) name: \($0.id)")
+            c_glBindBuffer($0.type, $0.id)
+        }
+    }
+}
+
+final class GLDataSingle<Name: VertexObjectName, Names: GLOBjectNames<Name>>: GLDataObject<Name, Names> {
+    func bind(onBind: (Name) -> Void) {
+        names.names.enumerated().forEach { idx, name in
+            super.bind { _, name in onBind(name) }
         }
     }
 }
@@ -45,16 +54,8 @@ extension GLDataSingle where Names == VertexArrayNames, Name == VertexArrayName 
     }
 }
 
-extension GLDataObject where Names == VertexBufferNames, Name == VertexBufferName {
-    convenience init(types: [UInt32] = [C_GL_ARRAY_BUFFER]) {
-        self.init(names: VertexBufferNames(types: types)) {
-            c_glBindBuffer($0.type, $0.id)
-        }
-    }
-}
-
 extension GLDataSingle where Names == VertexBufferNames, Name == VertexBufferName {
-    func bind() {
-        bind { _ in }
+    convenience init(type: UInt32) {
+        self.init(types: [type])
     }
 }

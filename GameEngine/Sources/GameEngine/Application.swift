@@ -50,7 +50,8 @@ import C_GLAD
 extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
-        let vbo = VertexBufferSingle()
+        let vbo = VertexBufferSingle(type: C_GL_ARRAY_BUFFER)
+        let ebo = VertexBufferSingle(type: C_GL_ELEMENT_ARRAY_BUFFER)
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
@@ -70,7 +71,7 @@ extension Application {
                 -0.5, -0.5, 0.0,  // bottom left
                 -0.5,  0.5, 0.0   // top left 
             ]
-            let indices: [Int] = [
+            let indices: [UInt32] = [
                 0, 1, 3,   // first triangle
                 1, 2, 3    // second triangle
             ]
@@ -85,8 +86,11 @@ extension Application {
                     let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
 
                     vaoName.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
-                    vaoName.enableAttribute(location: 0)
                 }
+                ebo.bind { buffer in
+                    buffer.add(indices, usage: C_GL_STATIC_DRAW)
+                }
+                vaoName.enableAttribute(location: 0)
             }
         }
 
@@ -97,7 +101,7 @@ extension Application {
 
                 shaderProgram.use()
                 vao.bind()
-                c_glDrawArrays(C_GL_TRIANGLES, 0, 3) // Number of verticies, params.count
+                c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
 
                 window.swapBuffers()
                 context.pollEvents()
