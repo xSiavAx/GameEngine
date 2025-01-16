@@ -1,37 +1,6 @@
 import C_GL
 import C_GLAD
 
-final class VertexArraySingle: VertexArrayObject {
-    var name: VertexArrayName { names.names.first! }
-
-    init() {
-        super.init(count: 1)
-    }
-
-    func bind(onBind: (VertexArrayName) -> Void) {
-        super.bind { _, name in onBind(name) }
-    }
-
-    func bind() {
-        self.bind { _ in }
-    }
-}
-
-class VertexArrayObject {
-    let names: VertexArrayNames
-
-    init(count: Int = 1) {
-        names = VertexArrayNames(count: count)
-    }
-
-    func bind(onBind: (Int, VertexArrayName) -> Void) {
-        names.names.enumerated().forEach { idx, name in
-            c_glBindVertexArray(name.id)
-            onBind(idx, name)
-        }
-    }
-}
-
 struct VertexArrayName: VertexObjectName {
     let id: UInt32
 
