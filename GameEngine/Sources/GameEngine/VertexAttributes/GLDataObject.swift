@@ -23,7 +23,7 @@ class GLDataObject<Name: VertexObjectName, Names: GLOBjectNames<Name>> {
     }
 }
 
-extension GLDataObject where Names == VertexArrayNames, Name == VertexArrayName {
+extension VertexArrayObject {
     convenience init(count: Int = 1) {
         self.init(names: VertexArrayNames(count: count)) {
             c_glBindVertexArray($0.id)
@@ -31,10 +31,9 @@ extension GLDataObject where Names == VertexArrayNames, Name == VertexArrayName 
     }
 }
 
-extension GLDataObject where Names == VertexBufferNames, Name == VertexBufferName {
+extension VertexBufferObject {
     convenience init(types: [UInt32]) {
         self.init(names: VertexBufferNames(types: types)) {
-            print("Bind type: \($0.type) name: \($0.id)")
             c_glBindBuffer($0.type, $0.id)
         }
     }
@@ -48,13 +47,13 @@ final class GLDataSingle<Name: VertexObjectName, Names: GLOBjectNames<Name>>: GL
     }
 }
 
-extension GLDataSingle where Names == VertexArrayNames, Name == VertexArrayName {
+extension VertexArraySingle {
     func bind() {
         bind { _ in }
     }
 }
 
-extension GLDataSingle where Names == VertexBufferNames, Name == VertexBufferName {
+extension VertexBufferSingle {
     convenience init(type: UInt32) {
         self.init(types: [type])
     }

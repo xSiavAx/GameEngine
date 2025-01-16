@@ -100,3 +100,7 @@ void c_glDrawArrays(GLenum mode, GLint first, GLsizei count) {
 void c_glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices) {
     glDrawElements(mode, count, type, indices);
 }
+
+void c_glPolygonMode(GLenum face, GLenum mode) {
+    glPolygonMode(face, mode);
+}

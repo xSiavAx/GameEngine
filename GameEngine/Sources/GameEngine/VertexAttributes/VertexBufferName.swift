@@ -32,7 +32,6 @@ struct VertexBufferName: VertexObjectName {
         let componentSize = MemoryLayout<T>.size
 
         data.withUnsafeBufferPointer { buffer in
-            print("c_glBufferData \(type), \(Int64(componentSize * data.count)), \(buffer.baseAddress), \(usage)")
             c_glBufferData(type, Int64(componentSize * data.count), buffer.baseAddress, usage);
         }
         return MemoryLayout<T>.size

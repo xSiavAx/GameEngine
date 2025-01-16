@@ -101,6 +101,7 @@ extension Application {
 
                 shaderProgram.use()
                 vao.bind()
+                c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_LINE)
                 c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
 
                 window.swapBuffers()
