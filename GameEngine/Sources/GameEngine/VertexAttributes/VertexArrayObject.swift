@@ -8,12 +8,17 @@ final class VertexArrayObject {
         names = VertexArrayNames(count: count)
     }
 
-    func bind(onBind: ((Int) -> Void)? = nil) {
+    func bind(onBind: (Int) -> Void) {
         names.names.enumerated().forEach { idx, name in
             c_glBindVertexArray(name.id)
-            onBind?(idx)
+            onBind(idx)
         }
     }
+
+    func bind() {
+        bind { _ in }
+    }
+
 
     func linkVertexAttributes(
         boundParams: VertexBufferName.BoundParams,

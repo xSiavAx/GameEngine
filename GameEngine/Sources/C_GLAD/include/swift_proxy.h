@@ -27,3 +27,6 @@ void c_glLinkProgram(GLuint program);
 void c_glGetProgramiv(GLuint program, GLenum pname, GLint *params);
 void c_glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
 void c_glUseProgram(GLuint program);
+
+
+void c_glDrawArrays(GLenum mode, GLint first, GLsizei count);

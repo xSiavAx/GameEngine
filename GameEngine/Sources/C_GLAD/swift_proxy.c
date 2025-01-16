@@ -92,3 +92,7 @@ void c_glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, G
 void c_glUseProgram(GLuint program) {
     glUseProgram(program);
 }
+
+void c_glDrawArrays(GLenum mode, GLint first, GLsizei count) {
+    glDrawArrays(mode, first, count);
+}
