@@ -81,7 +81,7 @@ extension Application {
                 vbo.bind { buffer in
                     let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
 
-                    vaoName.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
+                    buffer.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
                     vaoName.enableAttribute(location: 0)
                 }
 
