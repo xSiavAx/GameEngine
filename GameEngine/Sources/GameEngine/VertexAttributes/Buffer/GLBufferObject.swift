@@ -4,15 +4,15 @@ typealias GLBufferObject = GLDataObject<GLBufferName, GLBufferNames>
 typealias GLBufferSingle = GLDataSingle<GLBufferName, GLBufferNames>
 
 extension GLBufferObject {
-    convenience init(types: [UInt32]) {
+    convenience init(types: [BufferType]) {
         self.init(names: GLBufferNames(types: types)) {
-            c_glBindBuffer($0.type, $0.id)
+            c_glBindBuffer($0.type.gl, $0.id)
         }
     }
 }
 
 extension GLBufferSingle {
-    convenience init(type: UInt32) {
+    convenience init(type: BufferType) {
         self.init(types: [type])
     }
 }

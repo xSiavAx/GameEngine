@@ -2,14 +2,8 @@ import C_GL
 import C_GLAD
 
 struct GLBufferName: VertexObjectName {
-    struct BoundParams<T: GLType> {
-        var shouldNormilize: UInt8
-        var elementsCount: Int
-
-        var elementType: T.Type { T.self }
-    }
     let id: UInt32
-    let type: UInt32
+    let type: BufferType
 
     func add<T: GLType>(
         _ data: [T],
@@ -17,7 +11,7 @@ struct GLBufferName: VertexObjectName {
         usage: UInt32 = C_GL_STATIC_DRAW
     ) -> BoundParams<T> {
         data.withUnsafeBufferPointer { buffer in
-            c_glBufferData(type, Int64(T.size * data.count), buffer.baseAddress, usage);
+            c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage);
         }
 
         return BoundParams<T>(
@@ -44,7 +38,7 @@ struct GLBufferName: VertexObjectName {
 }
 
 final class GLBufferNames: GLObjectNames<GLBufferName> {
-    init(types: [UInt32]) {
+    init(types: [BufferType]) {
         super.init(
             count: types.count,
             makeName: { idx, name in GLBufferName(id: name, type: types[idx]) },

@@ -46,8 +46,8 @@ import C_GLAD
 extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
-        let vbo = GLBufferSingle(type: C_GL_ARRAY_BUFFER)
-        let ebo = GLBufferSingle(type: C_GL_ELEMENT_ARRAY_BUFFER)
+        let vbo = GLBufferSingle(type: .array)
+        let ebo = GLBufferSingle(type: .elementsArray)
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
