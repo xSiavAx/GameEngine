@@ -1,15 +1,8 @@
 import C_GL
 import C_GLAD
 
-
-// ???
-let C_GL_FRONT_AND_BACK = c(GL_FRONT_AND_BACK)
 // BufferUsage
 let C_GL_STATIC_DRAW = c(GL_STATIC_DRAW)
-
-//PolygonMode
-let C_GL_LINE = c(GL_LINE)
-let C_GL_FILL = c(GL_FILL)
 
 // wtf???
 let C_GL_TRUE = UInt8(GL_TRUE)

@@ -18,8 +18,8 @@ final class VertexArrayName: VertexObjectName {
     }
 
     func withDebugDraw(_ onDraw: () -> Void) {
-        c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_LINE)
-        defer { c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_FILL) }
+        c_glPolygonMode(GLFace.frontAndBack.gl, GLPolygonMode.line.gl)
+        defer { c_glPolygonMode(GLFace.frontAndBack.gl, GLPolygonMode.fill.gl) }
         onDraw()
     }
 
