@@ -1,6 +1,8 @@
 import C_GLAD
 import Foundation
 
+private let C_GL_COMPILE_STATUS = UInt32(GL_COMPILE_STATUS)
+
 enum ShaderError: Error {
     case compileError(String)
     case noTextInProvidedFile(FileLoader)

@@ -1,5 +1,7 @@
 import C_GLAD
 
+private let C_GL_LINK_STATUS = UInt32(GL_LINK_STATUS)
+
 enum ShaderProgramError: Error {
     case linkError(String)
 }

@@ -1,9 +1,6 @@
 import C_GL
 import C_GLAD
 
-// Programm status
-let C_GL_COMPILE_STATUS = c(GL_COMPILE_STATUS)
-let C_GL_LINK_STATUS = c(GL_LINK_STATUS)
 
 // ???
 let C_GL_FRONT_AND_BACK = c(GL_FRONT_AND_BACK)
