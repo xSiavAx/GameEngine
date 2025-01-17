@@ -8,10 +8,10 @@ struct GLBufferName: VertexObjectName {
     func add<T: GLType>(
         _ data: [T],
         normalized: Bool = true,
-        usage: UInt32 = C_GL_STATIC_DRAW
+        usage: GLBufferDataUsage = .staticDraw
     ) -> BoundParams<T> {
         data.withUnsafeBufferPointer { buffer in
-            c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage);
+            c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage.gl);
         }
 
         return BoundParams<T>(

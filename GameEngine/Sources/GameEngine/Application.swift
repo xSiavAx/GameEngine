@@ -79,14 +79,14 @@ extension Application {
 
             vao.bind { vaoName in
                 vbo.bind { buffer in
-                    let params = buffer.add(vertices, normalized: true, usage: C_GL_STATIC_DRAW)
+                    let params = buffer.add(vertices, normalized: true, usage: .staticDraw)
 
                     buffer.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
                     vaoName.enableAttribute(location: 0)
                 }
 
                 ebo.bind { buffer in
-                    let params = buffer.add(indices, usage: C_GL_STATIC_DRAW)
+                    let params = buffer.add(indices, usage: .staticDraw)
 
                     vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
                 }
