@@ -83,8 +83,16 @@ extension Application {
                     vaoName.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
                     vaoName.enableAttribute(location: 0)
                 }
+
                 ebo.bind { buffer in
                     buffer.add(indices, usage: C_GL_STATIC_DRAW)
+
+                    vaoName.setDrawer(.elements(
+                        mode: C_GL_TRIANGLES,
+                        count: vertices.count,
+                        elementType: type(of: vertices).Element.self,
+                        glType: C_GL_UNSIGNED_INT
+                    ))
                 }
             }
         }
@@ -95,10 +103,11 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
-                vao.draw { vaoName in
-                    // c_glDrawArrays(C_GL_TRIANGLES, 0, 3) // Number of verticies, params.count
-                    c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
-                }
+                try vao.draw()
+                // vao.draw { vaoName in
+                //     // c_glDrawArrays(C_GL_TRIANGLES, 0, 3) // Number of verticies, params.count
+                //     c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
+                // }
                 
                 window.swapBuffers()
                 context.pollEvents()

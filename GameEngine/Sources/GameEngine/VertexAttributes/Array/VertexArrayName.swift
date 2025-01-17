@@ -1,8 +1,17 @@
 import C_GL
 import C_GLAD
 
-struct VertexArrayName: VertexObjectName {
+enum VertexArrayError: Error {
+    case noDrawerSet
+}
+
+final class VertexArrayName: VertexObjectName {
     let id: UInt32
+    var drawer: VertexArrayDrawer?
+
+    init(id: UInt32) {
+        self.id = id
+    }
 
     func linkVertexAttributes(
         boundParams: GLBufferName.BoundParams,
@@ -28,6 +37,15 @@ struct VertexArrayName: VertexObjectName {
         c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_LINE)
         defer { c_glPolygonMode(C_GL_FRONT_AND_BACK, C_GL_FILL) }
         onDraw()
+    }
+
+    func setDrawer(_ drawer: VertexArrayDrawer) {
+        self.drawer = drawer
+    }
+
+    func draw() throws {
+        guard let drawer else { throw VertexArrayError.noDrawerSet }
+        drawer.draw()
     }
 }
 

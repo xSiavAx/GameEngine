@@ -10,11 +10,10 @@ extension VertexArrayObject {
         }
     }
 
-    func bind(onBind: (Name) -> Void) {
-        bind { _, name in onBind(name) }
-    }
-
-    func draw(onDraw: (Name) -> Void) {
-        bind(onBind: onDraw)
+    // For manual draw, use try vao.bind { idx, name in try name.draw() }
+    func draw() throws {
+        try bind { _, name in
+            try name.draw()
+        }
     }
 }
