@@ -1,10 +1,6 @@
 import C_GL
 import C_GLAD
 
-// Shader Type
-let C_GL_VERTEX_SHADER = c(GL_VERTEX_SHADER)
-let C_GL_FRAGMENT_SHADER = c(GL_FRAGMENT_SHADER)
-
 // Programm status
 let C_GL_COMPILE_STATUS = c(GL_COMPILE_STATUS)
 let C_GL_LINK_STATUS = c(GL_LINK_STATUS)

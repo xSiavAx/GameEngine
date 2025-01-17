@@ -73,8 +73,8 @@ extension Application {
             ]
 
             try shaderProgram.use(shaders: [
-                try .make(kind: C_GL_VERTEX_SHADER, name: "VertexShader"),
-                try .make(kind: C_GL_FRAGMENT_SHADER, name: "FragmentShader")
+                try .make(type: .vertex, name: "VertexShader"),
+                try .make(type: .fragment, name: "FragmentShader")
             ])
 
             vao.bind { vaoName in

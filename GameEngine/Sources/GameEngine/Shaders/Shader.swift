@@ -11,8 +11,8 @@ final class Shader {
 
     var attachID: UInt32 { return name }
 
-    init(kind: UInt32) {
-        name = c_glCreateShader(kind)
+    init(type: ShaderType) {
+        name = c_glCreateShader(type.gl)
     }
 
     deinit {
@@ -35,8 +35,8 @@ final class Shader {
         )
     }
 
-    static func make(kind: UInt32, content: String) throws -> Shader {
-        let shader = Shader(kind: kind)
+    static func make(type: ShaderType, content: String) throws -> Shader {
+        let shader = Shader(type: type)
 
         shader.load(content: content)
         try shader.compile()
@@ -44,18 +44,18 @@ final class Shader {
         return shader
     }
 
-    static func make(kind: UInt32, fileLolader: FileLoader) throws -> Shader {
+    static func make(type: ShaderType, fileLolader: FileLoader) throws -> Shader {
         let data = try fileLolader.load()
         guard let content = String(data: data, encoding: .utf8) else { throw ShaderError.noTextInProvidedFile(fileLolader) }
 
-        return try make(kind: kind, content: content)
+        return try make(type: type, content: content)
     }
 
-    static func make(kind: UInt32, url: URL) throws -> Shader {
-        return try make(kind: kind, fileLolader: DefaultFileLoader(url: url))
+    static func make(type: ShaderType, url: URL) throws -> Shader {
+        return try make(type: type, fileLolader: DefaultFileLoader(url: url))
     }
 
-    static func make(kind: UInt32, name: String) throws -> Shader {
-        return try make(kind: kind, fileLolader: try BundleFileLoader(title: name, ext: "gs"))
+    static func make(type: ShaderType, name: String) throws -> Shader {
+        return try make(type: type, fileLolader: try BundleFileLoader(title: name, ext: "gs"))
     }
 }
