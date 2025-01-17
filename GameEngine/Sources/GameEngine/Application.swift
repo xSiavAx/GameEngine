@@ -1,3 +1,4 @@
+// TODO: Try to repeat this trick but for C_CONSTANTS (like draw mode, BufferType and so on)
 
 @MainActor
 final class Application {
@@ -85,14 +86,9 @@ extension Application {
                 }
 
                 ebo.bind { buffer in
-                    buffer.add(indices, usage: C_GL_STATIC_DRAW)
+                    let params = buffer.add(indices, usage: C_GL_STATIC_DRAW)
 
-                    vaoName.setDrawer(.elements(
-                        mode: C_GL_TRIANGLES,
-                        count: vertices.count,
-                        elementType: type(of: vertices).Element.self,
-                        glType: C_GL_UNSIGNED_INT
-                    ))
+                    vaoName.setDrawer(params.elementsDrawer(mode: C_GL_TRIANGLES))
                 }
             }
         }
@@ -104,11 +100,7 @@ extension Application {
 
                 shaderProgram.use()
                 try vao.draw()
-                // vao.draw { vaoName in
-                //     // c_glDrawArrays(C_GL_TRIANGLES, 0, 3) // Number of verticies, params.count
-                //     c_glDrawElements(C_GL_TRIANGLES, 6, C_GL_UNSIGNED_INT, nil) // 6 indicies count
-                // }
-                
+
                 window.swapBuffers()
                 context.pollEvents()
             }

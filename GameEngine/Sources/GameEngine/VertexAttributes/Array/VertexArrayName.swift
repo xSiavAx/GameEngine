@@ -13,8 +13,8 @@ final class VertexArrayName: VertexObjectName {
         self.id = id
     }
 
-    func linkVertexAttributes(
-        boundParams: GLBufferName.BoundParams,
+    func linkVertexAttributes<T: GLType>(
+        boundParams: GLBufferName.BoundParams<T>,
         location: Int,
         numberOfComponents: Int,
         offset: UnsafeRawPointer? = nil
@@ -22,11 +22,11 @@ final class VertexArrayName: VertexObjectName {
         c_glVertexAttribPointer(
             UInt32(location), // location for pos (sepcified in VertexShader.gs)
             Int32(numberOfComponents),
-            boundParams.componentType,
+            T.glVal,
             boundParams.shouldNormilize,
-            Int32(numberOfComponents * boundParams.sizeOfComponent), // size of vertext (all components)
+            Int32(numberOfComponents * T.size), // size of vertext (all components)
             offset // offset in buffer (void *)
-        );
+        )
     }
 
     func enableAttribute(location: Int) {
