@@ -5,40 +5,40 @@ protocol VertexArrayDrawer {
 }
 
 extension VertexArrayDrawer where Self == ArraysVertexArrayDrawer {
-    static func arrays(mode: UInt32, first: Int32 = 0, count: Int32) -> ArraysVertexArrayDrawer {
+    static func arrays(mode: DrawMode, first: Int32 = 0, count: Int32) -> ArraysVertexArrayDrawer {
         ArraysVertexArrayDrawer(mode: mode, first: first, count: count)
     }
 }
 
 final class ArraysVertexArrayDrawer: VertexArrayDrawer {
-    let mode: UInt32
+    let mode: DrawMode
     let first: Int32
     let count: Int32
 
-    init(mode: UInt32, first: Int32, count: Int32) {
+    init(mode: DrawMode, first: Int32, count: Int32) {
         self.mode = mode
         self.first = first
         self.count = count
     }
 
     func draw() {
-        c_glDrawArrays(mode, first, count)
+        c_glDrawArrays(mode.gl, first, count)
     }
 }
 
 final class ElementsVertexArrayDrawer<T: GLType>: VertexArrayDrawer {
-    let mode: UInt32
+    let mode: DrawMode
     let count: Int
     let offset: Int?
 
-    init(mode: UInt32, count: Int, offset: Int? = nil) {
+    init(mode: DrawMode, count: Int, offset: Int? = nil) {
         self.mode = mode
         self.count = count
         self.offset = offset
     }
 
     func draw() {
-        c_glDrawElements(mode, Int32(count), T.glVal, offsetPointer)
+        c_glDrawElements(mode.gl, Int32(count), T.glVal, offsetPointer)
     }
 
     private var offsetPointer: UnsafeRawPointer? {
@@ -50,11 +50,11 @@ final class ElementsVertexArrayDrawer<T: GLType>: VertexArrayDrawer {
 }
 
 extension GLBufferName.BoundParams {
-    func arraysDrawer(mode: UInt32) -> VertexArrayDrawer {
+    func arraysDrawer(mode: DrawMode) -> VertexArrayDrawer {
         .arrays(mode: mode, count: Int32(elementsCount))
     }
 
-    func elementsDrawer(mode: UInt32) -> VertexArrayDrawer {
+    func elementsDrawer(mode: DrawMode) -> VertexArrayDrawer {
         ElementsVertexArrayDrawer<T>(mode: mode, count: elementsCount)
     }
 }

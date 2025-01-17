@@ -88,7 +88,7 @@ extension Application {
                 ebo.bind { buffer in
                     let params = buffer.add(indices, usage: C_GL_STATIC_DRAW)
 
-                    vaoName.setDrawer(params.elementsDrawer(mode: C_GL_TRIANGLES))
+                    vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
                 }
             }
         }
