@@ -1,3 +1,5 @@
+import C_GLAD
+
 protocol GLType {
     static var glVal: UInt32 { get }
 }
@@ -8,10 +10,13 @@ extension GLType {
 }
 
 extension UInt32: GLType {
-    static let glVal = C_GL_UNSIGNED_INT
+    static let glVal = UInt32(GL_UNSIGNED_INT)
 }
 
 extension Float: GLType {
-    static let glVal = C_GL_FLOAT
+    static let glVal = UInt32(GL_FLOAT)
 }
-        
+
+extension Bool: GLType {
+    static let glVal = UInt32(GL_BOOL)
+}
