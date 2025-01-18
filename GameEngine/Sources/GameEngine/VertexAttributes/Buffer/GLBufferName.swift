@@ -15,7 +15,7 @@ struct GLBufferName: VertexObjectName {
         }
 
         return BoundParams<T>(
-            shouldNormilize: normalized ? C_GL_FALSE : C_GL_TRUE,
+            shouldNormilize: !normalized,
             elementsCount: data.count
         )
     }
@@ -30,7 +30,7 @@ struct GLBufferName: VertexObjectName {
             UInt32(location), // location for pos (sepcified in VertexShader.gs)
             Int32(numberOfComponents),
             T.glVal,
-            boundParams.shouldNormilize,
+            boundParams.shouldNormilize.gl,
             Int32(numberOfComponents * T.size), // size of vertext (all components)
             offset // offset in buffer (void *)
         )
