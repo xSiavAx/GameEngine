@@ -1,7 +1,7 @@
 import C_GL
 import C_GLAD
 
-struct GLBufferName: VertexObjectName {
+struct GLBufferName: GLObjectName {
     let id: UInt32
     let type: BufferType
 

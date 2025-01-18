@@ -5,9 +5,11 @@ typealias VertexArraySingle = GLDataSingle<VertexArrayName, VertexArrayNames>
 
 extension VertexArrayObject {
     convenience init(count: Int = 1) {
-        self.init(names: VertexArrayNames(count: count)) {
-            c_glBindVertexArray($0.id)
-        }
+        self.init(
+            names: VertexArrayNames(count: count),
+            bind: { c_glBindVertexArray($0.id) },
+            unbind: { _ in c_glBindVertexArray(0) }
+        )
     }
 
     // For manual draw, use try vao.bind { idx, name in try name.draw() }

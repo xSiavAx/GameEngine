@@ -1,15 +1,15 @@
-protocol VertexObjectName {
+protocol GLObjectName {
     var id: UInt32 { get }
 }
 
-class GLObjectNames<Name: VertexObjectName> {
+class GLObjectNames<Name: GLObjectName> {
     typealias MakeName = (Int, UInt32) -> Name
     typealias OnGenerate = (Int32, UnsafeMutablePointer<UInt32>) -> Void
     typealias OnDelete = (Int32, UnsafePointer<UInt32>) -> Void
 
     private let onDelete: OnDelete
 
-    var names: [Name]
+    let names: [Name]
 
     init(
         count: Int, 

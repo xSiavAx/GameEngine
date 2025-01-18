@@ -1,4 +1,7 @@
-// TODO: Try to repeat this trick but for C_CONSTANTS (like draw mode, BufferType and so on)
+// TODO: Catch up on face cooling
+// glEnable(GL_CULL_FACE); // cull face
+// glCullFace(GL_BACK); // cull back face
+// glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
 @MainActor
 final class Application {

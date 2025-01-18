@@ -5,7 +5,7 @@ enum VertexArrayError: Error {
     case noDrawerSet
 }
 
-final class VertexArrayName: VertexObjectName {
+final class VertexArrayName: GLObjectName {
     let id: UInt32
     var drawer: VertexArrayDrawer?
 
