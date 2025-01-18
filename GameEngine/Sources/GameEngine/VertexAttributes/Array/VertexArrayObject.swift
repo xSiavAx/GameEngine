@@ -13,9 +13,14 @@ extension VertexArrayObject {
     }
 
     // For manual draw, use try vao.bind { idx, name in try name.draw() }
-    func draw() throws {
-        try bind { _, name in
+    func draw(
+        willDraw: (Int, VertexArrayName) -> Void = { _, _ in },
+        didDraw: (Int, VertexArrayName) -> Void = { _, _ in }
+    ) throws {
+        try bind { idx, name in
+            willDraw(idx, name)
             try name.draw()
+            didDraw(idx, name)
         }
     }
 }
