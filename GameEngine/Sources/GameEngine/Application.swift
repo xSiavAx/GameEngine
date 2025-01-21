@@ -3,6 +3,10 @@
 // glCullFace(GL_BACK); // cull back face
 // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
+// TODO: Add Vectors to CGType and make bind list of Vectors, instead of array of floats
+
+import Foundation
+
 @MainActor
 final class Application {
     let context: Context
@@ -43,8 +47,6 @@ final class Application {
                 .store(into: &keysBag)
     }
 }
-
-import C_GLAD
 
 extension Application {
     final class RunLoop {
@@ -96,11 +98,17 @@ extension Application {
         }
 
         func run() throws {
+            let vertexColorUniform: Uniform<SIMD4<Float>> = try shaderProgram.getUniform(name: "ourColor")
+
             while !window.shouldClose() {
                 try context.processInput()
                 context.clear(color: .limedSpruce)
 
+                let timeValue = GLTime.now
+                let greenValue = Float(sin(timeValue) / 2.0) + 0.5
+
                 shaderProgram.use()
+                vertexColorUniform.bind(.init(x: 0, y: greenValue, z: 0, w: 1.0))
                 try vao.draw()
 
                 window.swapBuffers()
