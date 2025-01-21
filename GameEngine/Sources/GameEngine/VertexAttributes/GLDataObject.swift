@@ -2,11 +2,13 @@ class GLDataObject<Name: GLObjectName, Names: GLObjectNames<Name>> {
     var names: Names
     var bind: (Name) -> Void
     var unbind: (Name) -> Void
+    var unbindAutomatically: Bool
 
-    init(names: Names, bind: @escaping (Name) -> Void, unbind: @escaping (Name) -> Void) {
+    init(names: Names, bind: @escaping (Name) -> Void, unbind: @escaping (Name) -> Void, unbindAutomatically: Bool) {
         self.names = names
         self.bind = bind
         self.unbind = unbind
+        self.unbindAutomatically = unbindAutomatically
     }
 
     func bind(onBind: (Int, Name) throws -> Void) rethrows {
@@ -15,7 +17,9 @@ class GLDataObject<Name: GLObjectName, Names: GLObjectNames<Name>> {
             bind(name)
             try onBind(idx, name)
         }
-        unbind(last)
+        if unbindAutomatically {
+            unbind(last)
+        }
     }
 }
 

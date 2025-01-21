@@ -50,7 +50,7 @@ extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
         let vbo = GLBufferSingle(type: .array)
-        let ebo = GLBufferSingle(type: .elementsArray)
+        let ebo = GLBufferSingle(type: .elementsArray, unbindAutomatically: false)
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
@@ -87,7 +87,6 @@ extension Application {
                     buffer.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
                     vaoName.enableAttribute(location: 0)
                 }
-
                 ebo.bind { buffer in
                     let params = buffer.add(indices, usage: .staticDraw)
 

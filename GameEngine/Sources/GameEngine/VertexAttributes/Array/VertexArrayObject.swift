@@ -8,7 +8,8 @@ extension VertexArrayObject {
         self.init(
             names: VertexArrayNames(count: count),
             bind: { c_glBindVertexArray($0.id) },
-            unbind: { _ in c_glBindVertexArray(0) }
+            unbind: { _ in c_glBindVertexArray(0) },
+            unbindAutomatically: false
         )
     }
 

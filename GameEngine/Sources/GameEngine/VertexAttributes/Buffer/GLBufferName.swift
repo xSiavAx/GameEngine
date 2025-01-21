@@ -38,7 +38,7 @@ struct GLBufferName: GLObjectName {
 }
 
 final class GLBufferNames: GLObjectNames<GLBufferName> {
-    init(types: [BufferType]) {
+    init(types: [BufferType], unbindAutomatically: Bool = true) {
         super.init(
             count: types.count,
             makeName: { idx, name in GLBufferName(id: name, type: types[idx]) },
