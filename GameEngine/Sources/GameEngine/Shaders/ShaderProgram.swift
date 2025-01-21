@@ -4,13 +4,14 @@ private let C_GL_LINK_STATUS = UInt32(GL_LINK_STATUS)
 
 enum ShaderProgramError: Error {
     case linkError(String)
+    case uniformNotFound(String)
 }
 
 final class ShaderProgram {
-    let name = c_glCreateProgram()
+    let id = c_glCreateProgram()
 
     func attach(shader: Shader) {
-        c_glAttachShader(name, shader.attachID);
+        c_glAttachShader(id, shader.attachID);
     }
 
     func attach(shaders: [Shader]) {
@@ -18,16 +19,16 @@ final class ShaderProgram {
     }
 
     func link() throws {
-        c_glLinkProgram(name)
+        c_glLinkProgram(id)
         try GLErrorChecker.check(
-            isSuccess: {  c_glGetProgramiv(name, C_GL_LINK_STATUS, &$0) },
-            getMessage: { c_glGetProgramInfoLog(name, $0, nil, $1) },
+            isSuccess: {  c_glGetProgramiv(id, C_GL_LINK_STATUS, &$0) },
+            getMessage: { c_glGetProgramInfoLog(id, $0, nil, $1) },
             makeError: { ShaderProgramError.linkError($0) }
         )
     }
 
     func use() {
-        c_glUseProgram(name)
+        c_glUseProgram(id)
     }
 
     func use(shaders: [Shader]) throws {
@@ -36,7 +37,13 @@ final class ShaderProgram {
         use()
     }
 
+    func getUniform<T>(name: String) throws -> Uniform<T> {
+        let location = c_glGetUniformLocation(id, name)
+        guard location != -1 else { throw ShaderProgramError.uniformNotFound(name) }
+        return Uniform(name: name, location: location)
+    }
+
     deinit {
-        c_glDeleteProgram(name)
+        c_glDeleteProgram(id)
     }
 }
