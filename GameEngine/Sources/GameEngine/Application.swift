@@ -3,8 +3,6 @@
 // glCullFace(GL_BACK); // cull back face
 // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
-// TODO: Add Vectors to CGType and make bind list of Vectors, instead of array of floats
-
 import Foundation
 
 @MainActor
