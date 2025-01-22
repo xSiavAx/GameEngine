@@ -122,9 +122,9 @@ extension Application {
                     // vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
                 }
                 ebo.bind { buffer in
-                    let params = buffer.add(indices, usage: .staticDraw)
+                    buffer.add(indices, usage: .staticDraw)
 
-                    vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
+                    vaoName.setDrawer(ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count))
                 }
             }
         }
@@ -133,9 +133,6 @@ extension Application {
             while !window.shouldClose() {
                 try context.processInput()
                 context.clear(color: .limedSpruce)
-
-                let timeValue = GLTime.now
-                let greenValue = Float(sin(timeValue) / 2.0) + 0.5
 
                 shaderProgram.use()
                 try vao.draw()

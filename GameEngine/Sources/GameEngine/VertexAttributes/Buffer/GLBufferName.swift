@@ -7,17 +7,11 @@ struct GLBufferName: GLObjectName {
 
     func add<T: GLType>(
         _ data: [T],
-        normalized: Bool = true,
         usage: GLBufferDataUsage = .staticDraw
-    ) -> BoundParams<T> {
+    ) {
         data.withUnsafeBufferPointer { buffer in
             c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage.gl)
         }
-
-        return BoundParams<T>(
-            shouldNormilize: !normalized,
-            elementsCount: data.count
-        )
     }
 
     func add<V: Vertex>(

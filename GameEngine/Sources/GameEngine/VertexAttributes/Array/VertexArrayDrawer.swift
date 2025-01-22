@@ -4,12 +4,6 @@ protocol VertexArrayDrawer {
     func draw()
 }
 
-extension VertexArrayDrawer where Self == ArraysVertexArrayDrawer {
-    static func arrays(mode: DrawMode, first: Int32 = 0, count: Int) -> ArraysVertexArrayDrawer {
-        ArraysVertexArrayDrawer(mode: mode, first: first, count: count)
-    }
-}
-
 final class ArraysVertexArrayDrawer: VertexArrayDrawer {
     let mode: DrawMode
     let first: Int32
@@ -43,18 +37,8 @@ final class ElementsVertexArrayDrawer<T: GLType>: VertexArrayDrawer {
 
     private var offsetPointer: UnsafeRawPointer? {
         guard let offset else { return nil }
-        let unsafeRawPointer = UnsafeRawPointer(bitPattern: 0)!
+        let unsafeRawPointer = UnsafeRawPointer(bitPattern: 0x1)! - 1
 
         return unsafeRawPointer + offset * T.size
-    }
-}
-
-extension GLBufferName.BoundParams {
-    func arraysDrawer(mode: DrawMode) -> VertexArrayDrawer {
-        .arrays(mode: mode, count: elementsCount)
-    }
-
-    func elementsDrawer(mode: DrawMode) -> VertexArrayDrawer {
-        ElementsVertexArrayDrawer<T>(mode: mode, count: elementsCount)
     }
 }
