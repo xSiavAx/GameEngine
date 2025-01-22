@@ -33,6 +33,7 @@ extension SIMD4: ComponentsContainer {
     static var componentsCount: Int { 4 }
 }
 
+
 // add components count default implementation for SIMD based on .one (or .zero)
 
 extension SIMD where Scalar: GLType {

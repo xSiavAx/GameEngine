@@ -5,7 +5,7 @@ protocol VertexArrayDrawer {
 }
 
 extension VertexArrayDrawer where Self == ArraysVertexArrayDrawer {
-    static func arrays(mode: DrawMode, first: Int32 = 0, count: Int32) -> ArraysVertexArrayDrawer {
+    static func arrays(mode: DrawMode, first: Int32 = 0, count: Int) -> ArraysVertexArrayDrawer {
         ArraysVertexArrayDrawer(mode: mode, first: first, count: count)
     }
 }
@@ -15,10 +15,10 @@ final class ArraysVertexArrayDrawer: VertexArrayDrawer {
     let first: Int32
     let count: Int32
 
-    init(mode: DrawMode, first: Int32, count: Int32) {
+    init(mode: DrawMode, first: Int32, count: Int) {
         self.mode = mode
         self.first = first
-        self.count = count
+        self.count = Int32(count)
     }
 
     func draw() {
@@ -51,7 +51,7 @@ final class ElementsVertexArrayDrawer<T: GLType>: VertexArrayDrawer {
 
 extension GLBufferName.BoundParams {
     func arraysDrawer(mode: DrawMode) -> VertexArrayDrawer {
-        .arrays(mode: mode, count: Int32(elementsCount))
+        .arrays(mode: mode, count: elementsCount)
     }
 
     func elementsDrawer(mode: DrawMode) -> VertexArrayDrawer {

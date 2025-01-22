@@ -28,22 +28,6 @@ struct GLBufferName: GLObjectName {
             c_glBufferData(type.gl, Int64(size), address, usage.gl)
         }
     }
-
-    func linkVertexAttributes<T: GLType>(
-        boundParams: GLBufferName.BoundParams<T>,
-        location: Int,
-        numberOfComponents: Int,
-        offset: UnsafeRawPointer? = nil
-    ) {
-        c_glVertexAttribPointer(
-            UInt32(location), // location for pos (sepcified in VertexShader.gs)
-            Int32(numberOfComponents),
-            T.glVal,
-            boundParams.shouldNormilize.gl,
-            Int32(numberOfComponents * T.size), // size of vertext (all components)
-            offset // offset in buffer (void *)
-        )
-    }
 }
 
 final class GLBufferNames: GLObjectNames<GLBufferName> {

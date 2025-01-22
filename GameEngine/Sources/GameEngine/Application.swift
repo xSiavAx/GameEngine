@@ -48,6 +48,24 @@ final class Application {
     }
 }
 
+struct MyVertex: Vertex {
+    nonisolated(unsafe) 
+    static var attributes: [VertexAttribute.Type] = [
+            SIMD3<Float>.self, 
+            // SIMD3<UInt32>.self
+    ]
+
+    var attributes: [VertexAttribute] { [
+        coords, 
+        // color
+    ] }
+
+    let coords: SIMD3<Float>
+    // let color: SIMD3<UInt32>
+}
+
+import C_GLAD
+
 extension Application {
     final class RunLoop {
         let vao = VertexArraySingle()
@@ -66,11 +84,11 @@ extension Application {
         }
 
         func prepare() throws {
-            let vertices: [Float] = [
-                 0.5,  0.5, 0.0,  // top right
-                 0.5, -0.5, 0.0,  // bottom right
-                -0.5, -0.5, 0.0,  // bottom left
-                -0.5,  0.5, 0.0   // top left 
+            let vertices = [
+                MyVertex(coords: .init(x: 0.5, y: 0.5, z: 0.0)),  // top right
+                MyVertex(coords: .init(x: 0.5, y: -0.5, z: 0.0)),  // bottom right
+                MyVertex(coords: .init(x: -0.5, y: -0.5, z: 0.0)),  // bottom left
+                MyVertex(coords: .init(x: -0.5, y: 0.5, z: 0.0))   // top left 
             ]
             let indices: [UInt32] = [
                 0, 1, 3,   // first triangle
@@ -84,16 +102,18 @@ extension Application {
 
             vao.bind { vaoName in
                 vbo.bind { buffer in
-                    let params = buffer.add(vertices, normalized: true, usage: .staticDraw)
+                    buffer.add(vertices: vertices, usage: .staticDraw)
 
-                    buffer.linkVertexAttributes(boundParams: params, location: 0, numberOfComponents: 3)
-                    vaoName.enableAttribute(location: 0)
+                    MyVertex.linkAttributes(shouldNormilize: false) { location, attributeType in
+                        attributeType.enable(location: location)
+                    }
+                    vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
                 }
-                ebo.bind { buffer in
-                    let params = buffer.add(indices, usage: .staticDraw)
+                // ebo.bind { buffer in
+                //     let params = buffer.add(indices, usage: .staticDraw)
 
-                    vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
-                }
+                //     vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
+                // }
             }
         }
 
