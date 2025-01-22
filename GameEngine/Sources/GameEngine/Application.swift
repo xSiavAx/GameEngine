@@ -99,7 +99,7 @@ extension Application {
                 ),  // bottom left
                 MyVertex(
                     coords: .init(x: -0.5, y: 0.5, z: 0.0),
-                    color: .init(x: 1, y: 0, z: 0)
+                    color: .init(x: 0, y: 0, z: 0)
                 )   // top left 
             ]
             let indices: [UInt32] = [
@@ -119,13 +119,13 @@ extension Application {
                     MyVertex.linkAttributes(shouldNormilize: false) { location, attributeType in
                         attributeType.enable(location: location)
                     }
-                    vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
+                    // vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
                 }
-                // ebo.bind { buffer in
-                //     let params = buffer.add(indices, usage: .staticDraw)
+                ebo.bind { buffer in
+                    let params = buffer.add(indices, usage: .staticDraw)
 
-                //     vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
-                // }
+                    vaoName.setDrawer(params.elementsDrawer(mode: .triangles))
+                }
             }
         }
 
