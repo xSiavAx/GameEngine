@@ -51,17 +51,17 @@ final class Application {
 struct MyVertex: Vertex {
     nonisolated(unsafe) 
     static var attributes: [VertexAttribute.Type] = [
-            SIMD3<Float>.self, 
-            // SIMD3<UInt32>.self
+        SIMD3<Float>.self, 
+        SIMD3<Float>.self
     ]
 
     var attributes: [VertexAttribute] { [
         coords, 
-        // color
+        color
     ] }
 
     let coords: SIMD3<Float>
-    // let color: SIMD3<UInt32>
+    let color: SIMD3<Float>
 }
 
 import C_GLAD
@@ -85,10 +85,22 @@ extension Application {
 
         func prepare() throws {
             let vertices = [
-                MyVertex(coords: .init(x: 0.5, y: 0.5, z: 0.0)),  // top right
-                MyVertex(coords: .init(x: 0.5, y: -0.5, z: 0.0)),  // bottom right
-                MyVertex(coords: .init(x: -0.5, y: -0.5, z: 0.0)),  // bottom left
-                MyVertex(coords: .init(x: -0.5, y: 0.5, z: 0.0))   // top left 
+                MyVertex(
+                    coords: .init(x: 0.5, y: 0.5, z: 0.0),
+                    color: .init(x: 1, y: 0, z: 0)
+                ),  // top right
+                MyVertex(
+                    coords: .init(x: 0.5, y: -0.5, z: 0.0),
+                    color: .init(x: 0, y: 1, z: 0)
+                ),  // bottom right
+                MyVertex(
+                    coords: .init(x: -0.5, y: -0.5, z: 0.0),
+                    color: .init(x: 0, y: 0, z: 1)
+                ),  // bottom left
+                MyVertex(
+                    coords: .init(x: -0.5, y: 0.5, z: 0.0),
+                    color: .init(x: 1, y: 0, z: 0)
+                )   // top left 
             ]
             let indices: [UInt32] = [
                 0, 1, 3,   // first triangle
@@ -118,8 +130,6 @@ extension Application {
         }
 
         func run() throws {
-            let vertexColorUniform: Uniform<SIMD4<Float>> = try shaderProgram.getUniform(name: "ourColor")
-
             while !window.shouldClose() {
                 try context.processInput()
                 context.clear(color: .limedSpruce)
@@ -128,7 +138,6 @@ extension Application {
                 let greenValue = Float(sin(timeValue) / 2.0) + 0.5
 
                 shaderProgram.use()
-                vertexColorUniform.bind(.init(x: 0, y: greenValue, z: 0, w: 1.0))
                 try vao.draw()
 
                 window.swapBuffers()
