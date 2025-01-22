@@ -4,6 +4,18 @@ protocol ComponentsContainer {
     static var componentsCount: Int { get }
 }
 
+extension SIMD2: ComponentsContainer {
+    static var componentsCount: Int { 2 }
+}
+
+extension SIMD3: ComponentsContainer {
+    static var componentsCount: Int { 3 }
+}
+
+extension SIMD4: ComponentsContainer {
+    static var componentsCount: Int { 4 }
+}
+
 protocol VertexAttribute: ComponentsContainer {
     static var rawSize: Int { get }
     static var glVal: UInt32 { get }
@@ -17,32 +29,13 @@ extension VertexAttribute {
     }
 }
 
-extension ComponentsContainer where Self: SIMD, Scalar: GLType {
+extension SIMD where Self: ComponentsContainer, Scalar: GLType {
     static var rawSize: Int { componentsCount * Scalar.size }
 }
 
-extension SIMD2: ComponentsContainer {
-    static var componentsCount: Int { 2 }
-}
-
-extension SIMD3: ComponentsContainer {
-    static var componentsCount: Int { 3 }
-}
-
-extension SIMD4: ComponentsContainer {
-    static var componentsCount: Int { 4 }
-}
-
-
-// add components count default implementation for SIMD based on .one (or .zero)
-
 extension SIMD where Scalar: GLType {
     static var glVal: UInt32 { Scalar.glVal }
-}
 
-extension SIMD3: VertexAttribute where Scalar: GLType {}
-
-extension SIMD where Scalar: GLType {
     func pack(into ptr: inout UnsafeMutableRawPointer) {
         for i in (0..<scalarCount) {
             ptr.storeBytes(of: self[i], as: Scalar.self)
@@ -50,6 +43,10 @@ extension SIMD where Scalar: GLType {
         }
     }
 }
+
+extension SIMD2: VertexAttribute where Scalar: GLType {}
+extension SIMD3: VertexAttribute where Scalar: GLType {}
+extension SIMD4: VertexAttribute where Scalar: GLType {}
 
 protocol Vertex {
     static var attributes: [VertexAttribute.Type] { get }
