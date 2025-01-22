@@ -11,13 +11,22 @@ struct GLBufferName: GLObjectName {
         usage: GLBufferDataUsage = .staticDraw
     ) -> BoundParams<T> {
         data.withUnsafeBufferPointer { buffer in
-            c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage.gl);
+            c_glBufferData(type.gl, Int64(T.size * data.count), buffer.baseAddress, usage.gl)
         }
 
         return BoundParams<T>(
             shouldNormilize: !normalized,
             elementsCount: data.count
         )
+    }
+
+    func add<V: Vertex>(
+        vertices: [V],
+        usage: GLBufferDataUsage = .staticDraw
+    ) {
+        VertexPacker.withPacked(vertices: vertices) { address, size in
+            c_glBufferData(type.gl, Int64(size), address, usage.gl)
+        }
     }
 
     func linkVertexAttributes<T: GLType>(
