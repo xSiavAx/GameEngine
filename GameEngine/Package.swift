@@ -20,16 +20,18 @@ let package = Package(
     targets: 
     platform.targets([
         "C_GLFW",
-        "C_GL"
+        "C_GL",
     ]) + [
         .target(name: "C_GLAD"),
+        .target(name: "C_STB_Image"),
         .executableTarget(
             name: "GameEngine",
             dependencies: platform.dependencies([
                 "C_GLFW",
                 "C_GL",
             ]) + [
-                "C_GLAD"
+                "C_GLAD",
+                "C_STB_Image",
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + shaders.asShadersResources(),
