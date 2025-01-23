@@ -1,50 +1,50 @@
 import Foundation
 
 public protocol DataProducer {
-    associatedtype S
-    associatedtype F: Error
+    associatedtype Success
+    associatedtype Failure: Error
 
-    func produce() -> Result<S, F>
+    func produce() -> Result<Success, Failure>
 }
 
 extension DataProducer {
-    public func get() throws-> S { return try produce().get() }
+    public func get() throws-> Success { return try produce().get() }
 }
 
-public final class AnyProducer<S, F: Error>: DataProducer {
-    private let onProduce: () -> Result<S, F>
+public final class AnyProducer<Success, Failure: Error>: DataProducer {
+    private let onProduce: () -> Result<Success, Failure>
 
-    public init(_ onProduce: @escaping () -> Result<S, F>) {
+    public init(_ onProduce: @escaping () -> Result<Success, Failure>) {
         self.onProduce = onProduce
     }
 
-    public func produce() -> Result<S, F> {
+    public func produce() -> Result<Success, Failure> {
         onProduce()
     }
 }
 
 extension DataProducer {
-    public func map<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S, Map.Failure == Never {
+    public func map<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, Failure> where Map.Input == Success, Map.Failure == Never {
         return AnyProducer { produce().map(mapper.map) }
     }
 
-    public func mapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<S, Map.Output> where Map.Input == F, Map.Output: Error, Map.Failure == Never {
+    public func mapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<Success, Map.Output> where Map.Input == Failure, Map.Output: Error, Map.Failure == Never {
         return AnyProducer { produce().mapError(mapper.map) }
     }
 
-    public func flatMap<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S, Map.Failure == F {
+    public func flatMap<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, Failure> where Map.Input == Success, Map.Failure == Failure {
         return AnyProducer { produce().flatMap(mapper.map) }
     }
 
-    public func flatMapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<S, Map.Failure> where Map.Input == F, Map.Output == S {
+    public func flatMapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<Success, Map.Failure> where Map.Input == Failure, Map.Output == Success {
         return AnyProducer { produce().flatMapError(mapper.map) }
     }
 }
 
-extension DataProducer where F == Never {
+extension DataProducer where Failure == Never {
     public func map<Map: Mapper>(
         _ mapper: Map
-    ) -> AnyProducer<Map.Output, Map.Failure> where Map.Input == S {
+    ) -> AnyProducer<Map.Output, Map.Failure> where Map.Input == Success {
         return AnyProducer { 
             switch produce() {
                 case .success(let val): mapper.map(val)

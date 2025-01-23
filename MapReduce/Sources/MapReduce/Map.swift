@@ -38,7 +38,6 @@ public final class AnyMapper<Input, Output, Failure: Error>: Mapper {
     }
 }
 
-
 extension Mapper {
     public func map<Other: Mapper>(other: Other) -> AnyMapper<Input, Other.Output, Failure> where Output == Other.Input, Other.Failure == Never {
         return AnyMapper { map($0).map(other.map) }
