@@ -16,9 +16,9 @@ let shaders = [
 let package = Package(
     name: "GameEngine",
     dependencies: [
+        .package(path: "../MapReduce"),
     ],
-    targets: 
-    platform.targets([
+    targets: platform.targets([
         "C_GLFW",
         "C_GL",
     ]) + [
@@ -32,6 +32,7 @@ let package = Package(
             ]) + [
                 "C_GLAD",
                 "C_STB_Image",
+                "MapReduce",
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + shaders.asShadersResources(),

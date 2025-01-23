@@ -106,8 +106,8 @@ extension Application {
             ]
 
             try shaderProgram.use(shaders: [
-                try Shader.load(type: .vertex, resourceName: "VertexShader"),
-                try Shader.load(type: .fragment, resourceName: "FragmentShader")
+                try Shader.load(type: .vertex, resource: "VertexShader"),
+                try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
 
             vao.bind { vaoName in

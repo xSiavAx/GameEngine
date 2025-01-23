@@ -1,30 +1,33 @@
 import C_STB_Image
+import Foundation
+import MapReduce
 
 struct STBImage {
     var width: Int
     var height: Int
     var channels: Int
     var data: Data
-}
 
-import Foundation
+    static func load(url: URL) throws -> STBImage {
+        return try url.map(UrlToSTBImage()).get()
+    }
 
-protocol STBImageLoader {
-    func load() throws -> STBImage
+    static func load(resource: ResourceReference) throws -> STBImage {
+        let url = try resource.map(ResourceReferenceToUrl()).get()
+        return try load(url: url)
+    }
 }
 
 enum STBImageLoadError: Error {
     case invalidImage(String) // Image is corrupted, invalid or memory allocation error
 }
 
-final class DefaultSTBImageLoader {
-    let url: URL
-
-    init(url: URL) {
-        self.url = url
+final class UrlToSTBImage: FailingMapper {
+    func map(_ url: URL) -> Result<STBImage, Error> {
+        return Result { try make(url) }
     }
 
-    func load() throws -> STBImage {
+    private func make(_ url: URL) throws(STBImageLoadError) -> STBImage {
         var width: UInt32 = 0
         var height: UInt32 = 0
         var channels: UInt32 = 0
@@ -33,13 +36,12 @@ final class DefaultSTBImageLoader {
             throw STBImageLoadError.invalidImage(url.path)
         }
         defer { stbi_image_free(bytes) }
-        let data = Data(bytes: bytes, count: Int(width * height * channels))
 
         return STBImage(
             width: Int(width),
             height: Int(height),
             channels: Int(channels),
-            data: data
+            data: Data(bytes: bytes, count: Int(width * height * channels))
         )
     }
 }
