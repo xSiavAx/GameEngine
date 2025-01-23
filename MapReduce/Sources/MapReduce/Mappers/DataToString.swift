@@ -4,7 +4,7 @@ public enum DataStringMapError: Error {
     case invalidData(Data)
 }
 
-public final class DataToString: FailingMapper {
+public final class DataToString: Mapper {
     public let encoding: String.Encoding
 
     public init(encoding: String.Encoding = .utf8) {

@@ -24,27 +24,27 @@ public final class AnyProducer<S, F: Error>: DataProducer {
 }
 
 extension DataProducer {
-    public func map<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S {
+    public func map<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S, Map.Failure == Never {
         return AnyProducer { produce().map(mapper.map) }
     }
 
-    public func mapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<S, Map.Output> where Map.Input == F, Map.Output: Error {
+    public func mapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<S, Map.Output> where Map.Input == F, Map.Output: Error, Map.Failure == Never {
         return AnyProducer { produce().mapError(mapper.map) }
     }
 
-    public func flatMap<Map: FailingMapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S, Map.OutputError == F {
+    public func flatMap<Map: Mapper>(_ mapper: Map) -> AnyProducer<Map.Output, F> where Map.Input == S, Map.Failure == F {
         return AnyProducer { produce().flatMap(mapper.map) }
     }
 
-    public func flatMapError<Map: FailingMapper>(_ mapper: Map) -> AnyProducer<S, Map.OutputError> where Map.Input == F, Map.Output == S {
+    public func flatMapError<Map: Mapper>(_ mapper: Map) -> AnyProducer<S, Map.Failure> where Map.Input == F, Map.Output == S {
         return AnyProducer { produce().flatMapError(mapper.map) }
     }
 }
 
 extension DataProducer where F == Never {
-    public func map<Map: FailingMapper>(
+    public func map<Map: Mapper>(
         _ mapper: Map
-    ) -> AnyProducer<Map.Output, Map.OutputError> where Map.Input == S {
+    ) -> AnyProducer<Map.Output, Map.Failure> where Map.Input == S {
         return AnyProducer { 
             switch produce() {
                 case .success(let val): mapper.map(val)

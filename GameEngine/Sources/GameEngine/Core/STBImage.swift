@@ -22,7 +22,7 @@ enum STBImageLoadError: Error {
     case invalidImage(String) // Image is corrupted, invalid or memory allocation error
 }
 
-final class UrlToSTBImage: FailingMapper {
+final class UrlToSTBImage: Mapper {
     func map(_ url: URL) -> Result<STBImage, Error> {
         return Result { try make(url) }
     }

@@ -19,8 +19,8 @@ struct ResourceReference {
 extension ResourceReference: SelfProducer {}
 
 final class ResourceReferenceToOptionalUrl: Mapper {
-    func map(_ val: ResourceReference) -> URL? {
-        return Bundle.module.url(forResource: val.title, withExtension: val.ext)
+    func map(_ val: ResourceReference) -> Result<URL?, Never> {
+        return .success(Bundle.module.url(forResource: val.title, withExtension: val.ext))
     }
 }
 
@@ -28,9 +28,9 @@ enum ResourceURLError: Error {
     case resoruceNotFound(ResourceReference)
 }
 
-final class ResourceReferenceToUrl: FailingMapper {
+final class ResourceReferenceToUrl: Mapper {
     func map(_ val: ResourceReference) -> Result<URL, ResourceURLError> {
-        guard let url = ResourceReferenceToOptionalUrl().map(val) else {
+        guard let url = ResourceReferenceToOptionalUrl().map(val).get() else {
             return .failure(ResourceURLError.resoruceNotFound(val))
         }
         return .success(url)

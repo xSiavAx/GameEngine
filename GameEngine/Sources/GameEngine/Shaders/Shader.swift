@@ -64,7 +64,7 @@ final class Shader {
     }
 }
 
-private final class StringToShader: FailingMapper {
+private final class StringToShader: Mapper {
     let type: ShaderType
 
     init(type: ShaderType) {
