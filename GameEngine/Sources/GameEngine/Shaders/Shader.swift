@@ -5,7 +5,6 @@ private let C_GL_COMPILE_STATUS = UInt32(GL_COMPILE_STATUS)
 
 enum ShaderError: Error {
     case compileError(String)
-    case noTextInProvidedFile(FileLoader)
 }
 
 final class Shader {
@@ -46,18 +45,39 @@ final class Shader {
         return shader
     }
 
-    static func make(type: ShaderType, fileLolader: FileLoader) throws -> Shader {
-        let data = try fileLolader.load()
-        guard let content = String(data: data, encoding: .utf8) else { throw ShaderError.noTextInProvidedFile(fileLolader) }
-
-        return try make(type: type, content: content)
+    static func load(type: ShaderType, url: URL) throws -> Shader {
+        return try ShaderLoad(url: url, map: URLShaderMapper(type: type))()
     }
 
-    static func make(type: ShaderType, url: URL) throws -> Shader {
-        return try make(type: type, fileLolader: DefaultFileLoader(url: url))
-    }
-
-    static func make(type: ShaderType, name: String) throws -> Shader {
-        return try make(type: type, fileLolader: try BundleFileLoader(title: name, ext: "gs"))
+    static func load(type: ShaderType, resourceName: String) throws -> Shader {
+        return try ShaderLoad(
+            url: BundleURLProvider(name: resourceName, ext: "gs"), 
+            map: URLShaderMapper(type: type)
+        )()
     }
 }
+
+private final class StringShaderMapper: Mapper {
+    let type: ShaderType
+
+    init(type: ShaderType) {
+        self.type = type
+    }
+
+    func callAsFunction(_ input: String) throws -> Shader {
+        return try .make(type: type, content: input)
+    }
+}
+
+private typealias DataShaderMapper = MapProxy<DataStringMapper, StringShaderMapper>
+
+private final class URLShaderMapper: MapProxy<DataLoader, DataShaderMapper> {
+    init(type: ShaderType) {
+        let strToShader = StringShaderMapper(type: type)
+        let dataToShader = DataShaderMapper(left: DataStringMapper(), right: strToShader)
+        super.init(left: DataLoader(), right: dataToShader)
+    }
+}
+
+private class ShaderLoad: FileBasedObjectLoad<Shader, URLShaderMapper> {}
+
