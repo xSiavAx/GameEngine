@@ -21,7 +21,7 @@ final class Texture {
     func bind() {
         // TODO: Add unbind?
         // OR replace it by `withBind(_ handler:)`?
-        c_glBindTexture(type, id)
+        c_glBindTexture(type.gl, id)
     }
 
     // Add config
@@ -36,16 +36,16 @@ final class Texture {
 
             guard Int(channels) == format.channels else { throw TextureError.unxpectedNumberOfChannlesInSource(channels, expected: channels) }
             guard type.isImage2D else { throw TextureError.textureTypeDoesntSupportImage2D }
-            guard !type.isRectangle || mipMapLevel == 0 else { throw throw TextureError.invalidMimapLevel }
+            guard !type.isRectangle || mipMapLevel == 0 else { throw TextureError.invalidMimapLevel }
 
             c_glTexImage2D(
                 type.gl,
-                mipMapLevel,
+                Int32(mipMapLevel),
                 internalFormat.gl,
-                data.width,
-                data.height,
+                Int32(data.width),
+                Int32(data.height),
                 0, // Border. Legacy. Must be 0.
-                format,
+                format.gl,
                 PixelDataType.unsignedByte.gl,
                 data.bytes
             )

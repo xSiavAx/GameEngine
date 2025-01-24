@@ -1,4 +1,5 @@
 import C_GLAD
+import C_GLFW
 import C_GL
 
 struct TextureType: GLConstantRepresentable {
@@ -11,7 +12,7 @@ struct TextureType: GLConstantRepresentable {
     static let array2D = m(GL_TEXTURE_2D_ARRAY)
     static let rectangle = m(GL_TEXTURE_RECTANGLE)
     static let cubeMap = m(GL_TEXTURE_CUBE_MAP)
-    static let cubeMapArray = m(GL_TEXTURE_CUBE_MAP_ARRAY)
+    // static let cubeMapArray = m(GL_TEXTURE_CUBE_MAP_ARRAY)
     static let cubeMapPositiveX = m(GL_TEXTURE_CUBE_MAP_POSITIVE_X)
     static let cubeMapNegativeX = m(GL_TEXTURE_CUBE_MAP_NEGATIVE_X)
     static let cubeMapPositiveY = m(GL_TEXTURE_CUBE_MAP_POSITIVE_Y)
@@ -29,9 +30,8 @@ struct TextureType: GLConstantRepresentable {
     static let proxyCubeMap = m(GL_PROXY_TEXTURE_CUBE_MAP)
 
 
-    var isImage2D: Bool { Self.image2DFormats.contians(gl) }
-    var supportsMipmap: Bool { Self.supportMipmapFormats.contians(gl) }
-
+    var isImage2D: Bool { Self.image2DFormats.contains(self) }
+    var supportsMipmap: Bool { Self.supportMipmapFormats.contains(self) }
     var isRectangle: Bool { return self == .rectangle || self == .proxyRectangle }
 
     private static let image2DFormats = [
@@ -48,7 +48,7 @@ struct TextureType: GLConstantRepresentable {
         GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
         GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
         GL_PROXY_TEXTURE_CUBE_MAP,
-    ]
+    ].map(m)
 
     private static let supportMipmapFormats = [
         GL_TEXTURE_1D,
@@ -57,6 +57,6 @@ struct TextureType: GLConstantRepresentable {
         GL_TEXTURE_1D_ARRAY,
         GL_TEXTURE_2D_ARRAY,
         GL_TEXTURE_CUBE_MAP,
-        GL_TEXTURE_CUBE_MAP_ARRAY,
-    ]
+        // GL_TEXTURE_CUBE_MAP_ARRAY,
+    ].map(m)
 }

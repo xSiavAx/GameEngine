@@ -1,4 +1,5 @@
 import C_GLAD
+import C_GLFW
 import C_GL
 
 extension Texture {
@@ -40,7 +41,7 @@ extension Texture {
     }
 
     struct InternalFormat: GLConstantRepresentable {
-        let gl: UInt32
+        let gl: Int32
 
         enum Base { // RGBA, Depth and Stencil Values | Internal Components
             static let depth_component = m(GL_DEPTH_COMPONENT) // Depth | D
@@ -126,10 +127,10 @@ extension Texture {
             static let signedRedRgtc1 = m(GL_COMPRESSED_SIGNED_RED_RGTC1) //| GL_RED | Specific
             static let rgRgtc2 = m(GL_COMPRESSED_RG_RGTC2) //| GL_RG | Specific
             static let signedRgRgtc2 = m(GL_COMPRESSED_SIGNED_RG_RGTC2) //| GL_RG | Specific
-            static let rgbaBptcUnorm = m(GL_COMPRESSED_RGBA_BPTC_UNORM) //| GL_RGBA | Specific
-            static let srgbAlphaBptcUnorm = m(GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM) //| GL_RGBA | Specific
-            static let rgbBptcSignedFloat = m(GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT) //| GL_RGB | Specific
-            static let rgbBptcUnsignedFloat = m(GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT) //| GL_RGB | Specific
+            // static let rgbaBptcUnorm = m(GL_COMPRESSED_RGBA_BPTC_UNORM) //| GL_RGBA | Specific
+            // static let srgbAlphaBptcUnorm = m(GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM) //| GL_RGBA | Specific
+            // static let rgbBptcSignedFloat = m(GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT) //| GL_RGB | Specific
+            // static let rgbBptcUnsignedFloat = m(GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT) //| GL_RGB | Specific
         }
     }
 }

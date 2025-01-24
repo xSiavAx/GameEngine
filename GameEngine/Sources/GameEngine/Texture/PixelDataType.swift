@@ -1,3 +1,7 @@
+import C_GLAD
+import C_GLFW
+import C_GL
+
 struct PixelDataType: GLConstantRepresentable {
     let gl: UInt32
 
