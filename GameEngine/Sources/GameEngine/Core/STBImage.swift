@@ -18,8 +18,33 @@ struct STBImage {
     }
 }
 
-enum STBImageLoadError: Error {
+struct UnsafeSTBData {
+    var width: UInt32 = 0
+    var height: UInt32 = 0
+    var channels: UInt32 = 0
+    var bytes: UnsafeRawPointer
+    var count: Int { Int(width * height * channels) }
+}
+
+enum STBReadError: Error {
     case invalidImage(String) // Image is corrupted, invalid or memory allocation error
+}
+
+struct STBRead {
+    let path: String
+
+    func withUnsafeBytes<T>(_ handle: (UnsafeSTBData) throws -> T) throws -> T {
+        var width: UInt32 = 0
+        var height: UInt32 = 0
+        var channels: UInt32 = 0
+
+        guard let bytes = stbi_load(path, &width, &height, &channels, 0) else {
+            throw STBReadError.invalidImage(path)
+        }
+        defer { stbi_image_free(bytes) }
+
+        return try handle(UnsafeSTBData(width: width, height: height, channels: channels, bytes: bytes))
+    }
 }
 
 final class UrlToSTBImage: Mapper {
@@ -27,21 +52,15 @@ final class UrlToSTBImage: Mapper {
         return Result { try make(url) }
     }
 
-    private func make(_ url: URL) throws(STBImageLoadError) -> STBImage {
-        var width: UInt32 = 0
-        var height: UInt32 = 0
-        var channels: UInt32 = 0
-
-        guard let bytes = stbi_load(url.path, &width, &height, &channels, 0) else {
-            throw STBImageLoadError.invalidImage(url.path)
+    private func make(_ url: URL) throws -> STBImage {
+        return try STBRead(path: url.path).withUnsafeBytes { data in
+            return STBImage(
+                width: Int(data.width),
+                height: Int(data.height),
+                channels: Int(data.channels),
+                data: Data(bytes: data.bytes, count: data.count)
+            ) 
         }
-        defer { stbi_image_free(bytes) }
-
-        return STBImage(
-            width: Int(width),
-            height: Int(height),
-            channels: Int(channels),
-            data: Data(bytes: bytes, count: Int(width * height * channels))
-        )
     }
 }
+
