@@ -13,6 +13,10 @@ let shaders = [
     "VertexShader", "FragmentShader"
 ]
 
+let textures = [
+    "wooden_box.jpg"
+]
+
 let package = Package(
     name: "GameEngine",
     dependencies: [
@@ -35,7 +39,7 @@ let package = Package(
                 "MapReduce",
             ],
             exclude: platform.exclude,
-            resources: platform.resourceToCopy() + shaders.asShadersResources(),
+            resources: platform.resourceToCopy() + shaders.asShadersResources() + textures.asTextureResources(),
             linkerSettings: platform.linkerSettings()
         )
     ]
@@ -82,8 +86,12 @@ struct PlatformSettings {
     }
 }
 
-extension Array where Element == String {
+private extension Array where Element == String {
     func asShadersResources() -> [Resource] {
         return map { .copy("Resources/Shaders/\($0).gs") }
     }
+
+    func asTextureResources() -> [Resource] {
+        return map { .copy("Resources/Textures/\($0)") }
+    } 
 }
