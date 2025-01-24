@@ -1,4 +1,4 @@
-protocol GLConstantRepresentable {
+protocol GLConstantRepresentable: Equatable {
     var gl: UInt32 { get }
 
     init(gl: UInt32)
