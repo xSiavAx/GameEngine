@@ -240,3 +240,23 @@ void c_glUniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, 
     glUniformMatrix4x3fv(location, count, transpose, value);
 }
 
+void c_glGenTextures(GLsizei n, GLuint * textures) {
+    glGenTextures(n, textures);
+}
+
+void c_glDeleteTextures(GLsizei n, const GLuint * textures) {
+    glDeleteTextures(n, textures);
+}
+
+void c_glBindTexture(GLenum target, GLuint texture) {
+    glBindTexture(target, texture);
+}
+
+void c_glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void * data) {
+    glTexImage2D(target, level, internalformat, width, height, border, format, type, data);
+}
+
+void c_glGenerateMipmap(GLenum target) {
+    glGenerateMipmap(target);
+}
+
