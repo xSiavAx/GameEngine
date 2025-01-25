@@ -5,8 +5,10 @@ import PackageDescription
 
 #if os(Windows)
 let platform = PlatformSettings.windows
-#else
+#elseif os(Linux)
 let platform = PlatformSettings.linux
+#else
+let platform = PlatformSettings.macos
 #endif
 
 let shaders = [
@@ -51,10 +53,12 @@ struct PlatformSettings {
     let copy: [String]
     let exclude: [String]
 
+    static let glfwDll = "Resources/DynamicLibraries/glfw3.dll"
+
     static let windows = PlatformSettings(
         systemLibSuffix: "WIN",
         linkerFlags: ["-lglfw3dll"],
-        copy: ["Resources/DynamicLibraries/glfw3.dll"],
+        copy: [glfwDll],
         exclude: [] 
     )
 
@@ -62,7 +66,14 @@ struct PlatformSettings {
         systemLibSuffix: "LIN",
         linkerFlags: [""],
         copy: [],
-        exclude: ["glfw3.dll"]
+        exclude: [glfwDll]
+    )
+
+    static let macos = PlatformSettings(
+        systemLibSuffix: "MAC",
+        linkerFlags: [""],
+        copy: [],
+        exclude: [glfwDll]
     )
 
     func libName(_ name: String) -> String {
