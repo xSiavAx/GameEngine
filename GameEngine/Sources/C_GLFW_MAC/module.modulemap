@@ -1,5 +1,7 @@
 module C_GLFW [system] {
     header "Headers.h"
-    link "Cocoa IOKit glfw3"
+    link "glfw3"
+    link framework "Cocoa" 
+    link framework "IOKit"
     export *
 }
