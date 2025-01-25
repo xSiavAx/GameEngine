@@ -1,0 +1,5 @@
+module C_GL [system] {
+    header "Headers.h"
+    link framework "OpenGL"
+    export *
+}
