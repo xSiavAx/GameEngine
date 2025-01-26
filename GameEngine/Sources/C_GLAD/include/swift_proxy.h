@@ -66,3 +66,5 @@ void c_glBindTexture(GLenum target, GLuint texture);
 void c_glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void * data);
 void c_glGenerateMipmap(GLenum target);
 void c_glActiveTexture(GLenum texture);
+
+void c_glTexParameteri(GLenum target, GLenum pname, GLint param);

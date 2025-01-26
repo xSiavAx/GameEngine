@@ -263,3 +263,7 @@ void c_glGenerateMipmap(GLenum target) {
 void c_glActiveTexture(GLenum texture) {
     glActiveTexture(texture);
 }
+
+void c_glTexParameteri(GLenum target, GLenum pname, GLint param) {
+    glTexParameteri(target, pname, param);
+}
