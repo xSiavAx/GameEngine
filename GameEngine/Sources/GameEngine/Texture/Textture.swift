@@ -87,8 +87,8 @@ final class Texture {
     ) throws -> Texture? {
         guard let texture = Texture(
             type: type, 
-            internalFormat: 
-            internalFormat, format: format
+            internalFormat: internalFormat, 
+            format: format
         ) else { throw TextureError.cantAllocateTextureID }
 
         try texture.withBind {
