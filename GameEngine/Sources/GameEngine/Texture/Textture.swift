@@ -33,7 +33,7 @@ final class Texture {
     }
 
     func set(source: URL, mipMapLevel: Int = 0) throws {
-        try STBRead(path: source.path).withUnsafeBytes { data in
+        try STBRead(path: source.path, flipVertically: true).withUnsafeBytes { data in
             let channels = Int(data.channels)
 
             guard Int(channels) == format.channels else { throw TextureError.unxpectedNumberOfChannlesInSource(channels, expected: channels) }

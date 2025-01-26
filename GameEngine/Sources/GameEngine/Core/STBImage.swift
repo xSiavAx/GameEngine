@@ -32,12 +32,19 @@ enum STBReadError: Error {
 
 struct STBRead {
     let path: String
+    let flipVertically: Bool
+
+    init(path: String, flipVertically: Bool = true) {
+        self.path = path
+        self.flipVertically = flipVertically
+    }
 
     func withUnsafeBytes<T>(_ handle: (UnsafeSTBData) throws -> T) throws -> T {
         var width: UInt32 = 0
         var height: UInt32 = 0
         var channels: UInt32 = 0
 
+        stbi_set_flip_vertically_on_load(flipVertically.asInt32)
         guard let bytes = stbi_load(path, &width, &height, &channels, 0) else {
             throw STBReadError.invalidImage(path)
         }
