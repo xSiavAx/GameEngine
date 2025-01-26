@@ -19,16 +19,18 @@ final class Texture {
     }
 
     func bind() {
-        // TODO: Add unbind?
-        // OR replace it by `withBind(_ handler:)`?
         c_glBindTexture(type.gl, id)
     }
 
-    // Add config
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    func unbind() {
+        c_glBindTexture(type.gl, 0)
+    }
+
+    func withBind(_ handler: () throws -> Void) rethrows {
+        bind()
+        defer { unbind() }
+        try handler()
+    }
 
     func set(source: URL, mipMapLevel: Int = 0) throws {
         try STBRead(path: source.path).withUnsafeBytes { data in
@@ -53,6 +55,12 @@ final class Texture {
         isSourceSet = true
     }
 
+    @discardableResult
+    func config(_ c: TextureConfig) -> Texture {
+        c.apply(type: type)
+        return self
+    }
+
     func generateMipmpap() throws {
         guard isSourceSet else { throw TextureError.sourceDidNotSet }
         guard type.supportsMipmap else { throw TextureError.textureTypeDoesntSupportMipmap }
@@ -69,7 +77,35 @@ final class Texture {
         try set(source: ResourceReference(name: resource), mipMapLevel: mipMapLevel)
     }
 
-    static func allocateID() -> UInt32? {
+    static func make(
+        resource: String, 
+        type: TextureType = .t2D, 
+        internalFormat: InternalFormat = .Base.rgb, 
+        format: Format = .rgb,
+        wrapping: WrappingMode,
+        generateMipmpap: Bool = true
+    ) throws -> Texture? {
+        guard let texture = Texture(
+            type: type, 
+            internalFormat: 
+            internalFormat, format: format
+        ) else { throw TextureError.cantAllocateTextureID }
+
+        try texture.withBind {
+            texture.config(.wrap(s: wrapping, t: wrapping))
+            if generateMipmpap {
+                texture.config(.filter(min: .linearMipmapLinear, mag: .linear))
+            }
+            try texture.setSource(resource: resource)
+            if generateMipmpap {
+                try texture.generateMipmpap()
+            }
+        }
+
+        return texture
+    }
+
+    private static func allocateID() -> UInt32? {
         var id: UInt32 = 0;
 
         c_glGenTextures(1, &id)
@@ -84,6 +120,7 @@ final class Texture {
 }
 
 enum TextureError: Error {
+    case cantAllocateTextureID
     case invalidMimapLevel
     case sourceDidNotSet
     case unxpectedNumberOfChannlesInSource(Int, expected: Int)
