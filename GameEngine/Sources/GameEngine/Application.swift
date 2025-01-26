@@ -74,7 +74,7 @@ extension Application {
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
-        var texture: Texture?
+        var textures = [Texture]()
 
         init(context: Context, window: Window) throws {
             self.context = context
@@ -87,12 +87,12 @@ extension Application {
         func prepare() throws {
             let vertices = [
                 MyVertex(
-                    coords: .init(x: 0.5, y: 0.5, z: 0.0),
+                    coords: .init(x: 0.5, y: 0.5, z: 0),
                     color: .init(x: 1, y: 0, z: 0),
                     texture: .init(1, 1)
                 ),  // top right
                 MyVertex(
-                    coords: .init(x: 0.5, y: -0.5, z: 0.0),
+                    coords: .init(x: 0.5, y: -0.5, z: 0),
                     color: .init(x: 0, y: 1, z: 0),
                     texture: .init(1, 0)
                 ),  // bottom right
@@ -103,7 +103,7 @@ extension Application {
                 ),  // bottom left
                 MyVertex(
                     coords: .init(x: -0.5, y: 0.5, z: 0.0),
-                    color: .init(x: 0, y: 0, z: 0),
+                    color: .init(x: 1, y: 1, z: 1),
                     texture: .init(0, 1)
                 )   // top left 
             ]
@@ -111,19 +111,32 @@ extension Application {
                 0, 1, 3,   // first triangle
                 1, 2, 3    // second triangle
             ]
-            texture = try Texture.make(
-                resource: "wooden_box.jpg", 
-                type: .t2D, 
-                internalFormat: .Base.rgb, 
-                format: .rgb, 
-                wrapping: .repeat, 
-                generateMipmpap: true
-            )
+            textures += [
+                try .make(
+                    resource: "wooden_box.jpg", 
+                    type: .t2D, 
+                    internalFormat: .Base.rgb, 
+                    format: .rgb, 
+                    wrapping: .repeat, 
+                    generateMipmpap: true
+                ),
+                try .make(
+                    resource: "awesomeface.png", 
+                    type: .t2D, 
+                    internalFormat: .Base.rgb, 
+                    format: .rgba, 
+                    wrapping: .repeat, 
+                    generateMipmpap: true
+                ),
+            ]
 
             try shaderProgram.use(shaders: [
                 try Shader.load(type: .vertex, resource: "VertexShader"),
                 try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
+
+            try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
+            try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
 
             vao.bind { vaoName in
                 vbo.bind { buffer in
@@ -147,7 +160,7 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
-                try texture?.withBind {
+                try textures.withBind {
                     try vao.draw()
                 }
 

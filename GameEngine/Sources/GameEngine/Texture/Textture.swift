@@ -84,7 +84,7 @@ final class Texture {
         format: Format = .rgb,
         wrapping: WrappingMode,
         generateMipmpap: Bool = true
-    ) throws -> Texture? {
+    ) throws -> Texture {
         guard let texture = Texture(
             type: type, 
             internalFormat: internalFormat, 
@@ -116,6 +116,21 @@ final class Texture {
     deinit {
         var id = id
         c_glDeleteTextures(1, &id)
+    }
+}
+
+extension Array where Element == Texture {
+    func withBind(_ handler: () throws -> Void) rethrows {
+        withActivate { _, texture in texture.bind() }
+        defer { withActivate { _, texture in texture.unbind() } }
+        try handler()
+    }
+
+    func withActivate(_ handler: (Int, Texture) throws -> Void ) rethrows {
+        for (index, texture) in enumerated() {
+            c_glActiveTexture(UInt32(GL_TEXTURE0) + UInt32(index))
+            try handler(index, texture)
+        }
     }
 }
 

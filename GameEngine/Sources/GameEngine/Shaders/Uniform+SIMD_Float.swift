@@ -1,27 +1,20 @@
 import Foundation
 import C_GLAD
 
-extension Float: UniformType {
+extension Float: UniformType, UniformComponent {
     func bind(location: Int32) {
         c_glUniform1f(location, self)
     }
-}
 
-extension SIMD2: UniformType where Scalar == Float {
-    func bind(location: Int32) {
-        c_glUniform2f(location, x, y)
+    static func bind(_ val: SIMD2<Float>, location: Int32) {
+        c_glUniform2f(location, val.x, val.y)
     }
-}
 
-
-extension SIMD3: UniformType where Scalar == Float {
-    func bind(location: Int32) {
-        c_glUniform3f(location, x, y, z)
+    static func bind(_ val: SIMD3<Float>, location: Int32) {
+        c_glUniform3f(location, val.x, val.y, val.z)
     }
-}
 
-extension SIMD4: UniformType where Scalar == Float {
-    func bind(location: Int32) {
-        c_glUniform4f(location, x, y, z, w)
+    static func bind(_ val: SIMD4<Float>, location: Int32) {
+        c_glUniform4f(location, val.x, val.y, val.z, val.w)
     }
 }

@@ -260,3 +260,6 @@ void c_glGenerateMipmap(GLenum target) {
     glGenerateMipmap(target);
 }
 
+void c_glActiveTexture(GLenum texture) {
+    glActiveTexture(texture);
+}

@@ -11,12 +11,11 @@ let platform = PlatformSettings.linux
 let platform = PlatformSettings.macos
 #endif
 
-let shaders = [
-    "VertexShader", "FragmentShader"
-]
+let shaders = ["VertexShader", "FragmentShader"]
 
 let textures = [
-    "wooden_box.jpg"
+    "awesomeface.png",
+    "wooden_box.jpg",
 ]
 
 let package = Package(
