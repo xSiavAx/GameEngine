@@ -22,6 +22,7 @@ let package = Package(
     name: "GameEngine",
     dependencies: [
         .package(path: "../MapReduce"),
+        .package(url: "https://github.com/keyvariable/kvSIMD.swift.git", from: "1.0.0"),
     ],
     targets: platform.targets([
         "C_GLFW",
@@ -38,6 +39,7 @@ let package = Package(
                 "C_GLAD",
                 "C_STB_Image",
                 "MapReduce",
+                .product(name: "kvSIMD", package: "kvSIMD.swift"),
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + shaders.asShadersResources() + textures.asTextureResources(),
