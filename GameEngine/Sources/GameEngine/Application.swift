@@ -4,6 +4,8 @@
 // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
 import Foundation
+import simd
+
 
 @MainActor
 final class Application {
@@ -85,6 +87,10 @@ extension Application {
         }
 
         func prepare() throws {
+            let transform = simd_float4x4(1)
+                .rotated(by: .degrees(90), around: .oZ)
+                .scaled(by: .one / 2)
+
             let vertices = [
                 MyVertex(
                     coords: .init(x: 0.5, y: 0.5, z: 0),
@@ -137,6 +143,7 @@ extension Application {
 
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
             try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
+            try shaderProgram.getUniform(name: "transform").bind(transform)
 
             vao.bind { vaoName in
                 vbo.bind { buffer in
