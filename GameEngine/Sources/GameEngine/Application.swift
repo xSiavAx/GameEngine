@@ -44,7 +44,7 @@ final class Application {
                 .addObserver(key: .ESCAPE, event: .keyUp) {  [weak self] in
                     self?.context.currentWindow?.requestClose() 
                 }
-                .store(into: &keysBag)
+                .store(in: &keysBag)
     }
 }
 

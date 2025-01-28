@@ -10,7 +10,7 @@ final class InputProcessor: Sendable {
 
         observers.forEach { key, keyObservers in
             if let state = state(for: key, using: windowPtr), let event = mapper.map(key: key, state: state) {
-                keyObservers.compactMap(\.wrappe).forEach {
+                keyObservers.forEach {
                     $0.fire(event: event)
                 }
             }
@@ -21,7 +21,7 @@ final class InputProcessor: Sendable {
     func addObserver(key: Key, event: KeyEvent, onEvent: @escaping () -> Void) -> AnyCancellable {
         let observer = Observer(key: key, event: event, handler: onEvent)
 
-        let token = observer.setOnCancel = { [weak self, weak observer] in 
+        let token = observer.setOnCancel { [weak self, weak observer] in 
             guard let self, let observer else { return }
             remove(observer: observer) 
         }

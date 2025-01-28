@@ -18,15 +18,11 @@ let textures = [
     "wooden_box.jpg",
 ]
 
-let platforms: [Platform] = [
-    .macOS(.v10_15),
-    .windows,
-    .linux,
-]
-
 let package = Package(
     name: "GameEngine",
-    platforms: platforms,
+    platforms: [
+        .macOS(.v10_15),
+    ],
     dependencies: [
         .package(path: "../MapReduce"),
         .package(url: "https://github.com/keyvariable/kvSIMD.swift.git", from: "1.0.0"),
