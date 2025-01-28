@@ -78,6 +78,9 @@ extension Application {
         let window: Window
         var textures = [Texture]()
 
+        private var timeSubject = PassthroughSubject<Double, Never>()
+        private var bag = Set<AnyCancellable>()
+
         init(context: Context, window: Window) throws {
             self.context = context
             self.window = window
@@ -87,9 +90,8 @@ extension Application {
         }
 
         func prepare() throws {
-            let transform = simd_float4x4(1)
-                .rotated(by: .degrees(90), around: .oZ)
-                .scaled(by: .one / 2)
+            let baseTransform = simd_float4x4(1)
+                .translated(by: SIMD3(0.5, -0.5, 0))
 
             let vertices = [
                 MyVertex(
@@ -143,7 +145,14 @@ extension Application {
 
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
             try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
-            try shaderProgram.getUniform(name: "transform").bind(transform)
+
+            let transformUniform = try shaderProgram.getUniform(name: "transform") as Uniform<simd_float4x4>
+
+            timeSubject
+                .map { Float($0) }
+                .map { time in baseTransform.rotated(by: time, around: .oZ) }
+                .sink { transform in transformUniform.bind(transform) }
+                .store(in: &bag)
 
             vao.bind { vaoName in
                 vbo.bind { buffer in
@@ -167,6 +176,7 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
+                timeSubject.send(GLTime.now)
                 try textures.withBind {
                     try vao.draw()
                 }
