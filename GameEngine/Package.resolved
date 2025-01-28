@@ -1,5 +1,5 @@
 {
-  "originHash" : "c065af01e560f9acc37e45537754c226287c4f2088caa518f8fb4bbe45534efe",
+  "originHash" : "c436dddd1a17de8eefa153049091b30089c63872d96a4343ad4999bf24569ac7",
   "pins" : [
     {
       "identity" : "kvsimd.swift",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "4f3b6775e8248eed764e9c10389b6d6859515ca3",
         "version" : "1.0.4"
+      }
+    },
+    {
+      "identity" : "opencombine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OpenSwiftUIProject/OpenCombine.git",
+      "state" : {
+        "revision" : "63aef318cb3a853bcb8d774cce15f4dcb1ccdfe4",
+        "version" : "0.15.1"
       }
     }
   ],

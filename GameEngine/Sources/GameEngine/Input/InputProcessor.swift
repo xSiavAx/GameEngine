@@ -1,7 +1,8 @@
 import C_GLFW
+import OpenCombineShim
 
 final class InputProcessor: Sendable {
-    nonisolated(unsafe) private var observers = [Key : [WeakWrapper<Observer>]]()
+    nonisolated(unsafe) private var observers = [Key : [Observer]]()
     nonisolated(unsafe) private var downKeys = Set<Key>()
 
     func process(windowPtr: OpaquePointer) {
@@ -9,7 +10,7 @@ final class InputProcessor: Sendable {
 
         observers.forEach { key, keyObservers in
             if let state = state(for: key, using: windowPtr), let event = mapper.map(key: key, state: state) {
-                keyObservers.compactMap(\.wrappe).forEach {
+                keyObservers.forEach {
                     $0.fire(event: event)
                 }
             }
@@ -17,24 +18,22 @@ final class InputProcessor: Sendable {
         downKeys = mapper.downKeys
     }
 
-    func addObserver(key: Key, event: KeyEvent, onEvent: @escaping () -> Void) -> Releasable {
-        let observer = Observer(key: key, event: event)
+    func addObserver(key: Key, event: KeyEvent, onEvent: @escaping () -> Void) -> AnyCancellable {
+        let observer = Observer(key: key, event: event, handler: onEvent)
 
-        observer.onRelease = { [weak self, weak observer] in 
+        let token = observer.setOnCancel { [weak self, weak observer] in 
             guard let self, let observer else { return }
             remove(observer: observer) 
         }
-        observer.handler = onEvent
-
-        observers[key, default: []].append(WeakWrapper(wrappe: observer))
-        return observer
+        observers[key, default: []].append(observer)
+        return token
     }
 
     private func remove(observer: Observer) {
         let key = observer.key
 
         guard var list = observers[observer.key] else { return }
-        if let index = list.firstIndex(where: { $0.wrappe === observer }) {
+        if let index = list.firstIndex(where: { $0 === observer }) {
             list.remove(at: index)
             observers[key] = list.isEmpty ? nil : list
         }

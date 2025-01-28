@@ -5,13 +5,13 @@
 
 import Foundation
 import simd
-
+import OpenCombineShim
 
 @MainActor
 final class Application {
     let context: Context
     let window: Window
-    var keysBag = Set<AnyReleasable>()
+    var keysBag = Set<AnyCancellable>()
 
     init() throws {
         let context = try Context.make(glVersion: (major: 3, minor: 3))
@@ -44,7 +44,7 @@ final class Application {
                 .addObserver(key: .ESCAPE, event: .keyUp) {  [weak self] in
                     self?.context.currentWindow?.requestClose() 
                 }
-                .store(into: &keysBag)
+                .store(in: &keysBag)
     }
 }
 

@@ -1,18 +1,26 @@
+@preconcurrency import OpenCombineShim
+
 extension InputProcessor {
-    final class Observer: ClosureReleasable {
+    final class Observer {
         let key: Key 
         let event: KeyEvent
-        var handler: (() -> Void)?
+        var handler: () -> Void
 
-        init(key: Key, event: KeyEvent) {
+        init(key: Key, event: KeyEvent, handler: @escaping () -> Void) {
             self.key = key
             self.event = event
-            super.init()
+            self.handler = handler
+        }
+
+        func setOnCancel(_ onCancel: @escaping () -> Void) -> AnyCancellable {
+            return AnyCancellable {
+                onCancel()
+            }
         }
 
         func fire(event: KeyEvent) {
             if self.event == event {
-                handler?()
+                handler()
             }
         }
     }
