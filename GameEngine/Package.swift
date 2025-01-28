@@ -18,11 +18,19 @@ let textures = [
     "wooden_box.jpg",
 ]
 
+let platforms: [Platform] = [
+    .macOS(.v10_15),
+    .windows,
+    .linux,
+]
+
 let package = Package(
     name: "GameEngine",
+    platforms: platforms,
     dependencies: [
         .package(path: "../MapReduce"),
         .package(url: "https://github.com/keyvariable/kvSIMD.swift.git", from: "1.0.0"),
+        .package(url: "https://github.com/OpenSwiftUIProject/OpenCombine.git", from: "0.15.1"),
     ],
     targets: platform.targets([
         "C_GLFW",
@@ -40,6 +48,7 @@ let package = Package(
                 "C_STB_Image",
                 "MapReduce",
                 .product(name: "kvSIMD", package: "kvSIMD.swift"),
+                .product(name: "OpenCombineShim", package: "opencombine")
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + shaders.asShadersResources() + textures.asTextureResources(),
