@@ -1,5 +1,6 @@
 import C_GL
 import C_GLFW
+import OpenCombineShim
 
 enum ContextError: Error {
     case initializatioError
@@ -17,8 +18,9 @@ final class Context {
 
     let inputProcessor = InputProcessor()
 
-    private(set) var viewPortSize: ISize = .zero {
-        didSet { viewPortSizeDidSet() }
+    @Published
+    var viewPort: ISize = .zero {
+        didSet { glViewport(0, 0, viewPort.cWidth, viewPort.cHeight) }
     }
 
     init() throws {
@@ -55,7 +57,7 @@ final class Context {
 
     func adjustViewport() throws {
         try ensureGLReady()
-        viewPortSize = try requireCurrentWindow().size
+        viewPort = try requireCurrentWindow().size
     }
 
     func loadGlad() throws {
@@ -79,10 +81,6 @@ final class Context {
         return currentWindow
     }
 
-    private func viewPortSizeDidSet() {
-        glViewport(0, 0, viewPortSize.cWidth, viewPortSize.cHeight);
-    }
-
     deinit {
         glfwTerminate()
     }
@@ -99,7 +97,7 @@ extension Context: WindowContext {
 
     func windowDidChangeSize(_ window: Window) {
         if currentWindow === window {
-            viewPortSize = window.size
+            viewPort = window.size
         }
     }
 }

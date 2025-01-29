@@ -76,6 +76,12 @@ extension Application {
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
+        @Published
+        var modelMatrix: simd_float4x4 = .identity.rotated(by: .degrees(-55), around: .oX)
+        @Published
+        var viewMatrix: simd_float4x4 = .identity.translated(by: SIMD3(0, 0, -3))
+        @Published
+        var projectionMatrix: simd_float4x4 = .identity
         var textures = [Texture]()
 
         private var timeSubject = PassthroughSubject<Double, Never>()
@@ -90,8 +96,17 @@ extension Application {
         }
 
         func prepare() throws {
-            let baseTransform = simd_float4x4(1)
-                .translated(by: SIMD3(0.5, -0.5, 0))
+            context.$viewPort
+                .map { size in Float(size.width / size.height)  }
+                .map { 
+                    simd_float4x4.perspective(
+                        fovy: .degrees(45), 
+                        aspect: $0, 
+                        near: 0.1, 
+                        far: 100
+                    ) 
+                }
+                .assign(to: &$projectionMatrix)
 
             let vertices = [
                 MyVertex(
@@ -146,12 +161,20 @@ extension Application {
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
             try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
 
-            let transformUniform = try shaderProgram.getUniform(name: "transform") as Uniform<simd_float4x4>
+            let modelUniform = try shaderProgram.getUniform(name: "model") as Uniform<simd_float4x4>
+            let viewUniform = try shaderProgram.getUniform(name: "view") as Uniform<simd_float4x4>
+            let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<simd_float4x4>
 
-            timeSubject
-                .map { Float($0) }
-                .map { time in baseTransform.rotated(by: time, around: .oZ) }
-                .sink { transform in transformUniform.bind(transform) }
+            $modelMatrix
+                .sink { modelUniform.bind($0) }
+                .store(in: &bag)
+            
+            $viewMatrix
+                .sink { viewUniform.bind($0) }
+                .store(in: &bag)
+
+            $projectionMatrix
+                .sink { projectionUniform.bind($0) }
                 .store(in: &bag)
 
             vao.bind { vaoName in
