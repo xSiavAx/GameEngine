@@ -170,8 +170,8 @@ extension Application {
                 .assign(to: &$projectionMatrix)
 
             $time
-                .map { [modelMatrix] time in
-                    modelMatrix.rotated(by: Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
+                .map { time in
+                    .identity.rotated(by: Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
                 }
                 .assign(to: &$modelMatrix)
 
