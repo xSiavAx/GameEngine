@@ -158,7 +158,7 @@ extension Application {
             let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<simd_float4x4>
 
             context.$viewPort
-                .map { size in Float(size.width / size.height)  }
+                .map { size in Float(size.width) / Float(size.height)  }
                 .map { 
                     simd_float4x4.perspective(
                         fovy: .degrees(45), 
@@ -171,7 +171,7 @@ extension Application {
 
             $time
                 .map { time in
-                    .identity.rotated(by: Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
+                    .rotation(Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
                 }
                 .assign(to: &$modelMatrix)
 
