@@ -15,6 +15,18 @@ final class Context {
     private(set) var glVersionDidConfigure = false
     private(set) var gladDidLoad = false
     var currentWindowDidSet: Bool { currentWindow != nil }
+    private var clearMask = C_GL_COLOR_BUFFER_BIT
+    var isDepthTestEnabled = false {
+        didSet {
+            if isDepthTestEnabled {
+                clearMask |= C_GL_DEPTH_BUFFER_BIT
+                glEnable(C_GL_DEPTH_TEST)
+            } else {
+                clearMask &= ~C_GL_DEPTH_BUFFER_BIT
+                glDisable(C_GL_DEPTH_TEST)
+            }
+        }
+    }
 
     let inputProcessor = InputProcessor()
 
@@ -69,7 +81,7 @@ final class Context {
 
     func clear(color: Color) {
         glClearColor(color.cRed, color.cGreen, color.cBlue, color.cAlpha);
-        glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+        glClear(clearMask)
     }
 
     func processInput() throws {

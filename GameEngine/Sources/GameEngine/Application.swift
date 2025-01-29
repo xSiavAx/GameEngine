@@ -37,6 +37,7 @@ final class Application {
         try context.loadGlad()
         try context.adjustViewport()
         try window.setupResizeHandler()
+        context.isDepthTestEnabled = true
     }
 
     func bindInput() {
