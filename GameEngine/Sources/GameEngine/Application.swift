@@ -17,7 +17,7 @@ final class Application {
         let context = try Context.make(glVersion: (major: 3, minor: 3))
 
         self.context = context
-        self.window = try context.makeWindow(size: ISize(width: 640, height: 480), title: "Hello World")
+        self.window = try context.makeWindow(size: ISize(width: 800, height: 600), title: "Hello World")
 
         try setupContext()
         try run()
@@ -77,14 +77,15 @@ extension Application {
         let context: Context
         let window: Window
         @Published
-        var modelMatrix: simd_float4x4 = .identity.rotated(by: .degrees(-55), around: .oX)
+        var modelMatrix: simd_float4x4 = .identity
         @Published
         var viewMatrix: simd_float4x4 = .identity.translated(by: SIMD3(0, 0, -3))
         @Published
         var projectionMatrix: simd_float4x4 = .identity
         var textures = [Texture]()
 
-        private var timeSubject = PassthroughSubject<Double, Never>()
+        @Published
+        private var time = 0.0
         private var bag = Set<AnyCancellable>()
 
         init(context: Context, window: Window) throws {
@@ -96,40 +97,30 @@ extension Application {
         }
 
         func prepare() throws {
-            context.$viewPort
-                .map { size in Float(size.width / size.height)  }
-                .map { 
-                    simd_float4x4.perspective(
-                        fovy: .degrees(45), 
-                        aspect: $0, 
-                        near: 0.1, 
-                        far: 100
-                    ) 
-                }
-                .assign(to: &$projectionMatrix)
 
-            let vertices = [
-                MyVertex(
-                    coords: .init(x: 0.5, y: 0.5, z: 0),
-                    color: .init(x: 1, y: 0, z: 0),
-                    texture: .init(1, 1)
-                ),  // top right
-                MyVertex(
-                    coords: .init(x: 0.5, y: -0.5, z: 0),
-                    color: .init(x: 0, y: 1, z: 0),
-                    texture: .init(1, 0)
-                ),  // bottom right
-                MyVertex(
-                    coords: .init(x: -0.5, y: -0.5, z: 0.0),
-                    color: .init(x: 0, y: 0, z: 1),
-                    texture: .init(0, 0)
-                ),  // bottom left
-                MyVertex(
-                    coords: .init(x: -0.5, y: 0.5, z: 0.0),
-                    color: .init(x: 1, y: 1, z: 1),
-                    texture: .init(0, 1)
-                )   // top left 
-            ]
+            let vertices = MyVertex.cubeVertices
+            // [
+            //     MyVertex(
+            //         coords: .init(x: 0.5, y: 0.5, z: 0),
+            //         color: .init(x: 1, y: 0, z: 0),
+            //         texture: .init(1, 1)
+            //     ),  // top right
+            //     MyVertex(
+            //         coords: .init(x: 0.5, y: -0.5, z: 0),
+            //         color: .init(x: 0, y: 1, z: 0),
+            //         texture: .init(1, 0)
+            //     ),  // bottom right
+            //     MyVertex(
+            //         coords: .init(x: -0.5, y: -0.5, z: 0.0),
+            //         color: .init(x: 0, y: 0, z: 1),
+            //         texture: .init(0, 0)
+            //     ),  // bottom left
+            //     MyVertex(
+            //         coords: .init(x: -0.5, y: 0.5, z: 0.0),
+            //         color: .init(x: 1, y: 1, z: 1),
+            //         texture: .init(0, 1)
+            //     )   // top left 
+            // ]
             let indices: [UInt32] = [
                 0, 1, 3,   // first triangle
                 1, 2, 3    // second triangle
@@ -165,6 +156,24 @@ extension Application {
             let viewUniform = try shaderProgram.getUniform(name: "view") as Uniform<simd_float4x4>
             let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<simd_float4x4>
 
+            context.$viewPort
+                .map { size in Float(size.width / size.height)  }
+                .map { 
+                    simd_float4x4.perspective(
+                        fovy: .degrees(45), 
+                        aspect: $0, 
+                        near: 0.1, 
+                        far: 100
+                    ) 
+                }
+                .assign(to: &$projectionMatrix)
+
+            $time
+                .map { [modelMatrix] time in
+                    modelMatrix.rotated(by: Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
+                }
+                .assign(to: &$modelMatrix)
+
             $modelMatrix
                 .sink { modelUniform.bind($0) }
                 .store(in: &bag)
@@ -184,12 +193,12 @@ extension Application {
                     MyVertex.linkAttributes(shouldNormilize: false) { location, attributeType in
                         attributeType.enable(location: location)
                     }
-                    // vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
+                    vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count))
                 }
-                ebo.bind { buffer in
-                    buffer.add(indices, usage: .staticDraw)
-                    vaoName.setDrawer(ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count))
-                }
+                // ebo.bind { buffer in
+                //     buffer.add(indices, usage: .staticDraw)
+                //     vaoName.setDrawer(ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count))
+                // }
             }
         }
 
@@ -199,7 +208,7 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
-                timeSubject.send(GLTime.now)
+                time = GLTime.now
                 try textures.withBind {
                     try vao.draw()
                 }
@@ -209,4 +218,50 @@ extension Application {
             }
         }
     }
+}
+
+extension MyVertex {
+    static let cubeVertices: [MyVertex] = [
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
+        MyVertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0))
+    ]
 }
