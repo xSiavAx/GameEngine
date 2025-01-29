@@ -28,10 +28,6 @@ final class Application {
         _ = try RunLoop(context: context, window: window)
     }
 
-    func runLoop() throws {
-        
-    }
-
     private func setupContext() throws {
         window.makeContextCurrent()
         try context.loadGlad()
@@ -98,7 +94,6 @@ extension Application {
         }
 
         func prepare() throws {
-
             let vertices = MyVertex.cubeVertices
             // [
             //     MyVertex(
@@ -169,7 +164,7 @@ extension Application {
                 }
                 .assign(to: &$projectionMatrix)
 
-            let rotationAxis = SIMD3<Float>(0.5, 1, 0).normalizedIfNot
+            let rotationAxis = SIMD3<Float>(0.5, 1, 0).normalized
             $time
                 .map { time in
                     .rotation(angle: Float(time) * .degrees(50), axis: rotationAxis)

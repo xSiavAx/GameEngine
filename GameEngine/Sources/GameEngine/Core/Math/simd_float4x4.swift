@@ -47,7 +47,7 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
     }
 
     func rotated(by angle: Float, around vector: SIMD3<Float>) -> simd_float4x4 {
-        return rotated(by: angle, axis: vector.normalizedIfNot)
+        return rotated(by: angle, axis: vector.normalized)
     }
 
     func rotated(by angle: Float, axis: SIMD3<Float>) -> simd_float4x4 {
@@ -55,7 +55,7 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
     }
 
     static func rotation(angle: Float, around vector: SIMD3<Float>) -> simd_float4x4 {
-        return rotation(angle: angle, axis: vector.normalizedIfNot)
+        return rotation(angle: angle, axis: vector.normalized)
     }
 
     static func rotation(angle: Float, axis: SIMD3<Float>) -> simd_float4x4 {
