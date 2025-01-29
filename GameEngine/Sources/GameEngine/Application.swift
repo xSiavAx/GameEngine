@@ -169,9 +169,10 @@ extension Application {
                 }
                 .assign(to: &$projectionMatrix)
 
+            let rotationAxis = SIMD3<Float>(0.5, 1, 0).normalizedIfNot
             $time
                 .map { time in
-                    .rotation(Float(time) * .degrees(50), around: SIMD3(0.5, 1, 0))
+                    .rotation(angle: Float(time) * .degrees(50), axis: rotationAxis)
                 }
                 .assign(to: &$modelMatrix)
 
