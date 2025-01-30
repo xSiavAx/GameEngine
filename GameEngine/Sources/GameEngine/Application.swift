@@ -75,15 +75,16 @@ extension Application {
 
         private var cubes = CubeModel.cubes[0..<10]
 
+        private let cameraHelper = CameraHelper(transform: Transform(position: SIMD3(0, 0, -3)))
+
         @Published
         var time: Double = 0
         @Published
-        var viewMatrix: simd_float4x4 = .identity.translated(by: SIMD3(0, 0, -3))
-        @Published
         var projectionMatrix: simd_float4x4 = .identity
 
-        private var bag = Set<AnyCancellable>()
+        let timeDelta = TimeDelta()
 
+        private var bag = Set<AnyCancellable>()
 
 
         init(context: Context, window: Window) throws {
@@ -99,14 +100,15 @@ extension Application {
                 try Shader.load(type: .vertex, resource: "VertexShader"),
                 try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
+
+            cameraHelper.control.bindInput(context.inputProcessor)
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
             try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
 
-            let viewUniform = try shaderProgram.getUniform(name: "view") as Uniform<simd_float4x4>
+            try cameraHelper.config(shaderProgram: shaderProgram)
             let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<simd_float4x4>
-            
             let drawHelper = try CubeModelHelper(shaderProgram: shaderProgram)
 
             context.$viewPort
@@ -121,9 +123,6 @@ extension Application {
                 }
                 .assign(to: &$projectionMatrix)
             
-            $viewMatrix
-                .sink { viewUniform.bind($0) }
-                .store(in: &bag)
 
             $projectionMatrix
                 .sink { projectionUniform.bind($0) }
@@ -153,6 +152,7 @@ extension Application {
         }
 
         func run() throws {
+            timeDelta.reset()
             while !window.shouldClose() {
                 try context.processInput()
                 context.clear(color: .limedSpruce)
@@ -160,10 +160,13 @@ extension Application {
                 shaderProgram.use()
                 time = GLTime.now
 
+                let delta = timeDelta.update()
 
                 try drawHelper?.draw(models: cubes) {
                     try vao.draw()
                 }
+
+                cameraHelper.update(delta: delta)
 
                 window.swapBuffers()
                 context.pollEvents()
