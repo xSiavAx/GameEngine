@@ -21,7 +21,7 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
 
 
     func translated(by translation: SIMD3<Float>) -> simd_float4x4 {
-        return self * Self.translation(translation)
+        return Self.translation(translation) * self
     }
 
     static func translation(_ translation: SIMD3<Float>) -> simd_float4x4 {
@@ -33,7 +33,7 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
     }
 
     func scaled(by scale: SIMD3<Float>) -> simd_float4x4 {
-        return self * Self.scale(scale)
+        return Self.scale(scale) * self
     }
 
     static func scale(_ scale: SIMD3<Float>) -> simd_float4x4 {
@@ -51,7 +51,7 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
     }
 
     func rotated(by angle: Float, axis: SIMD3<Float>) -> simd_float4x4 {
-        return self * Self.rotation(angle: angle, axis: axis)
+        return Self.rotation(angle: angle, axis: axis) * self
     }
 
     static func rotation(angle: Float, around vector: SIMD3<Float>) -> simd_float4x4 {
@@ -61,5 +61,9 @@ extension simd_float4x4: @retroactive @unchecked Sendable {
     static func rotation(angle: Float, axis: SIMD3<Float>) -> simd_float4x4 {
         let rotation = simd_quatf(angle: angle, axis: axis)
         return simd_float4x4(rotation)
+    }
+
+    func transformed(by transform: simd_float4x4) -> simd_float4x4 {
+        return transform * self
     }
 }
