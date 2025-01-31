@@ -45,24 +45,6 @@ final class Application {
     }
 }
 
-struct MyVertex: Vertex {
-    static let attributes: [VertexAttribute.Type] = [
-        SIMD3<Float>.self, 
-        SIMD3<Float>.self,
-        SIMD2<Float>.self
-    ]
-
-    var attributes: [VertexAttribute] { [
-        coords, 
-        color,
-        texture
-    ] }
-
-    let coords: SIMD3<Float>
-    let color: SIMD3<Float>
-    let texture: SIMD2<Float>
-}
-
 import C_GLAD
 
 extension Application {
@@ -73,14 +55,14 @@ extension Application {
         let window: Window
         var drawHelper: CubeModelHelper?
 
-        private var cubes = CubeModel.cubes[0..<10]
+        private var cubes = AnyModel.cubes[0..<10]
 
         private let cameraHelper = CameraHelper(transform: Transform(position: SIMD3(0, 0, -3)))
 
         @Published
         var time: Double = 0
         @Published
-        var projectionMatrix: simd_float4x4 = .identity
+        var projectionMatrix: float4x4 = .identity
 
         let timeDelta = TimeDelta()
 
@@ -102,19 +84,21 @@ extension Application {
             ])
 
             cameraHelper.control.bindInput(context.inputProcessor)
+
+            print(base * pos)
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
             try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
 
             try cameraHelper.config(shaderProgram: shaderProgram)
-            let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<simd_float4x4>
+            let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<float4x4>
             let drawHelper = try CubeModelHelper(shaderProgram: shaderProgram)
 
             context.$viewPort
                 .map { size in Float(size.width) / Float(size.height)  }
                 .map { 
-                    simd_float4x4.perspective(
+                    float4x4.perspective(
                         fovy: .degrees(45), 
                         aspect: $0, 
                         near: 0.1, 

@@ -14,7 +14,7 @@ struct GLBufferName: GLObjectName {
         }
     }
 
-    func add<V: Vertex>(
+    func add<V: AttributedVertex>(
         vertices: [V],
         usage: GLBufferDataUsage = .staticDraw
     ) {

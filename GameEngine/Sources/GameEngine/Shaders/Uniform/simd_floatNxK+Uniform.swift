@@ -1,7 +1,7 @@
 import simd
 import C_GLAD
 
-extension simd_float4x4: UniformType {
+extension float4x4: UniformType {
     func bind(location: Int32) {
         withUnsafePointer(to: self) {
             $0.withMemoryRebound(to: Float.self, capacity: 16) {
