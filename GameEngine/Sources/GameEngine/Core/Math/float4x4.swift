@@ -66,4 +66,23 @@ extension float4x4: @retroactive @unchecked Sendable {
     func transformed(by transform: float4x4) -> float4x4 {
         return transform * self
     }
+
+    static func look(at target: SIMD3<Float>, from eye: SIMD3<Float>, up: SIMD3<Float> = SIMD3(0, 1, 0)) -> float4x4 {
+        let zAxis = simd_normalize(eye - target)
+        let xAxis = simd_normalize(simd_cross(up, zAxis))
+        let yAxis = simd_cross(zAxis, xAxis)
+
+        let translation = SIMD3<Float>(
+            -simd_dot(xAxis, eye),
+            -simd_dot(yAxis, eye),
+            -simd_dot(zAxis, eye)
+        )
+
+        return float4x4(
+            SIMD4(xAxis.x, yAxis.x, zAxis.x, 0),
+            SIMD4(xAxis.y, yAxis.y, zAxis.y, 0),
+            SIMD4(xAxis.z, yAxis.z, zAxis.z, 0),
+            SIMD4(translation.x, translation.y, translation.z, 1)
+        )
+    }
 }
