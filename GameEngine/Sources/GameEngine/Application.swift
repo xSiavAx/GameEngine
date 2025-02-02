@@ -57,7 +57,7 @@ extension Application {
 
         private var cubes = AnyModel.cubes[0..<10]
 
-        private let cameraHelper = CameraHelper(transform: Transform(position: SIMD3(0, 0, -3)))
+        private let cameraHelper = CameraHelper(transform: FreeTransform(position: SIMD3(0, 0, -3)))
 
         @Published
         var time: Double = 0
@@ -84,6 +84,16 @@ extension Application {
             ])
 
             cameraHelper.control.bindInput(context.inputProcessor)
+
+            let base = float4x4(
+                SIMD4<Float>(1, 1, 1, 0),
+                SIMD4<Float>(2, 2, 2, 0),
+                SIMD4<Float>(3, 3, 3, 0),
+                SIMD4<Float>(0, 0, 0, 1)
+            )
+
+            var pos = float4x4(1)
+            pos.columns.3 = SIMD4<Float>(5, 5, 5, 1)
 
             print(base * pos)
             
@@ -118,7 +128,7 @@ extension Application {
                 .sink { [weak self] time in
                     guard let self else { return }
                     for i in (0..<cubes.count) {
-                        cubes[i].transform.rotation = .rotation(angle: time + .degrees(20.0 * Float(i)), axis: rotationAxis)
+                        cubes[i].freeTransform.rotation = simd_quatf(angle: time + .degrees(20.0 * Float(i)), axis: rotationAxis)
                     }
                 }
                 .store(in: &bag)

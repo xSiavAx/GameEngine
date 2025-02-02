@@ -4,11 +4,11 @@ import OpenCombineShim
 final class CameraHelper {
     let control = CameraControl()
     @Published
-    var transform = Transform()
+    var transform = FreeTransform()
 
     private var bag = Set<AnyCancellable>()
 
-    init(transform: Transform) {
+    init(transform: FreeTransform) {
         self.transform = transform
     }
 
@@ -33,8 +33,8 @@ final class CameraHelper {
 
 final class CameraControl {
     enum Update {
-        case transform(Transform)
-        case reset(Transform)
+        case transform(FreeTransform)
+        case reset(FreeTransform)
     }
     private struct Input: OptionSet {
         let rawValue: Int
@@ -60,7 +60,7 @@ final class CameraControl {
 
         guard !input.isEmpty else { return nil }
 
-        guard !input.contains(.reset) else { return .reset(Transform()) }
+        guard !input.contains(.reset) else { return .reset(FreeTransform()) }
 
         if input.contains(.moveForward) {
             move.z += 1
@@ -80,7 +80,7 @@ final class CameraControl {
         if input.contains(.moveDown) {
             move.y -= 1
         }
-        return .transform(Transform(position: move * delta * moveSpeed))
+        return .transform(FreeTransform(position: move * delta * moveSpeed))
     }
     
 

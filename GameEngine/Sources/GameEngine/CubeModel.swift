@@ -57,7 +57,7 @@ struct CubeModelHelper {
 
 
 extension AnyModel {
-    static let cubes = cubePositions.map { AnyModel(transform: Transform(position: $0)) }
+    static let cubes = cubePositions.map { AnyModel(freeTransform: FreeTransform(position: $0)) }
 
     private static let cubePositions = [
         SIMD3<Float>(0.0, 0.0, 0.0),

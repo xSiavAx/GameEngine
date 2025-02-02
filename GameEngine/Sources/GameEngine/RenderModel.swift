@@ -3,5 +3,6 @@ protocol RenderModel {
 }
 
 struct AnyModel: RenderModel {
-    var transform: Transform
+    var transform: Transform { freeTransform }
+    var freeTransform: FreeTransform
 }

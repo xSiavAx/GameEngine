@@ -10,6 +10,15 @@ extension SIMD3 where Scalar: ExpressibleByIntegerLiteral {
 extension SIMD3 where Scalar: FloatORDouble {
     var lengthSquared: Scalar { Scalar.len_squared(self) }
 
+    static var right: Self { .oX }
+    static var left: Self { -.oX }
+    static var up: Self { .oY }
+    static var down: Self { -.oY }
+    static var frontR: Self { -.oZ }
+    static var backR: Self { .oZ }
+    static var frontL: Self { -.frontR }
+    static var backL: Self { -.backR }
+
     var normalized: Self {
         Scalar.normalize(self)
     }
