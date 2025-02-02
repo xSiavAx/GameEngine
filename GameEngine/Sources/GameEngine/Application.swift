@@ -91,11 +91,6 @@ extension Application {
                 SIMD4<Float>(3, 3, 3, 0),
                 SIMD4<Float>(0, 0, 0, 1)
             )
-
-            var pos = float4x4(1)
-            pos.columns.3 = SIMD4<Float>(5, 5, 5, 1)
-
-            print(base * pos)
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))

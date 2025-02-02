@@ -29,10 +29,9 @@ struct FreeTransform: Transform {
     var rotation: simd_quatf
     var scale: SIMD3<Float>
 
-    // TODO replace by literal
     init(
         position: SIMD3<Float> = .zero,
-        rotation: simd_quatf = simd_quatf(float4x4(1)), 
+        rotation: simd_quatf = simd_quatf(real: 1, imag: .zero), 
         scale: SIMD3<Float> = .one
     ) {
         self.position = position
