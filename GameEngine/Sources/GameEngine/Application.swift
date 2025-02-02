@@ -57,7 +57,7 @@ extension Application {
 
         private var cubes = AnyModel.cubes[0..<10]
 
-        private let cameraHelper = CameraHelper(transform: FreeTransform(position: SIMD3(0, 0, -3)))
+        private let cameraHelper = CameraHelper(transform: LookAtTransform(position: .zero, front: .frontR))
 
         @Published
         var time: Double = 0

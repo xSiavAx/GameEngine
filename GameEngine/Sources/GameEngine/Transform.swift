@@ -4,23 +4,39 @@ protocol Transform: Sendable {
     func callAsFunction() -> float4x4
 }
 
-struct LookAtATransform: Transform {
-    var positon: SIMD3<Float>
-    var target: SIMD3<Float>
+struct LookAtTransform: Transform {
+    var position: SIMD3<Float>
+    var front: SIMD3<Float>
     var up: SIMD3<Float>
 
+    var right: SIMD3<Float> { simd_cross(front, up) }
+
     init(
-        positon: SIMD3<Float> = .zero, 
-        target: SIMD3<Float> = .oZ, 
+        position: SIMD3<Float> = .zero, 
+        front: SIMD3<Float> = .frontR, 
         up: SIMD3<Float> = .oY
     ) {
-        self.positon = positon
-        self.target = target
+        self.position = position
+        self.front = front
         self.up = up
     }
 
     func callAsFunction() -> float4x4 {
-        return .look(at: target, from: positon, up: up)
+        return .look(at: position + front, from: position, up: up)
+    }
+
+    static func + (lhs: LookAtTransform, rhs: LookAtTransform) -> LookAtTransform {
+        var result = lhs
+
+        result.position += rhs.position
+        // result.rotation = lhs.rotation * rhs.rotation
+        // result.scale *= rhs.scale
+
+        return result
+    }
+
+    static func += (lhs: inout LookAtTransform, rhs: LookAtTransform) {
+        lhs = lhs + rhs    
     }
 }
 

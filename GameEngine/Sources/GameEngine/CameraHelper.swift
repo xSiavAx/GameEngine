@@ -4,11 +4,11 @@ import OpenCombineShim
 final class CameraHelper {
     let control = CameraControl()
     @Published
-    var transform = FreeTransform()
+    var transform = LookAtTransform()
 
     private var bag = Set<AnyCancellable>()
 
-    init(transform: FreeTransform) {
+    init(transform: LookAtTransform) {
         self.transform = transform
     }
 
@@ -20,22 +20,11 @@ final class CameraHelper {
     }
 
     func update(delta: Float) {
-        switch control.update(delta: delta) {
-            case .transform(let delta):
-                transform += delta
-            case .reset(let initial):
-                transform = initial
-            case .none:
-                break
-        }
+        control.update(transform: &transform, delta: delta)
     }
 }
 
 final class CameraControl {
-    enum Update {
-        case transform(FreeTransform)
-        case reset(FreeTransform)
-    }
     private struct Input: OptionSet {
         let rawValue: Int
 
@@ -55,32 +44,30 @@ final class CameraControl {
     var moveSpeed: Float = 20.0
     private var keysBag = Set<AnyCancellable>()
 
-    func update(delta: Float) -> Update? {
+    func update(transform: inout LookAtTransform, delta: Float) {
+        guard !input.isEmpty else { return }
+        guard !input.contains(.reset) else { return transform = LookAtTransform() }
         var move = SIMD3<Float>(repeating: 0)
-
-        guard !input.isEmpty else { return nil }
-
-        guard !input.contains(.reset) else { return .reset(FreeTransform()) }
-
+        
         if input.contains(.moveForward) {
-            move.z += 1
+            move += transform.front
         }
         if input.contains(.moveBackward) {
-            move.z -= 1
+            move -= transform.front
         }
         if input.contains(.moveRight) {
-            move.x -= 1
+            move += transform.right
         }
         if input.contains(.moveLeft) {
-            move.x += 1
+            move -= transform.right
         }
         if input.contains(.moveUp) {
-            move.y += 1
+            move += transform.up
         }
         if input.contains(.moveDown) {
-            move.y -= 1
+            move -= transform.up
         }
-        return .transform(FreeTransform(position: move * delta * moveSpeed))
+        transform.position += move * delta * moveSpeed
     }
     
 
