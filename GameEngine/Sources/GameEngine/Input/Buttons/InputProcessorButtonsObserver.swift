@@ -1,6 +1,6 @@
 @preconcurrency import OpenCombineShim
 
-extension InputProcessor {
+extension InputProcessor.Buttons {
     final class Observer {
         let key: Key 
         let event: KeyEvent

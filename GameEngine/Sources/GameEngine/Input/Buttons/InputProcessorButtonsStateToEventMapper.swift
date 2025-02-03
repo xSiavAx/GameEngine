@@ -1,4 +1,4 @@
-extension InputProcessor {
+extension InputProcessor.Buttons {
     struct StateToEventMapper {
         private(set) var oldDownKeys: Set<Key>
         private(set) var downKeys = Set<Key>()

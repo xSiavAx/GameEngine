@@ -1,4 +1,4 @@
-extension InputProcessor {
+extension InputProcessor.Buttons {
     enum Key: Int32, CaseIterable {
         case SPACE = 32 //                GLFW_KEY_SPACE  
         case APOSTROPHE = 39 //           GLFW_KEY_APOSTROPHE /* ' */
