@@ -2,11 +2,17 @@ import C_GLFW
 import OpenCombineShim
 
 extension InputProcessor {
-    final class Buttons: Sendable {
-        nonisolated(unsafe) private var observers = [Key : [Observer]]()
-        nonisolated(unsafe) private var downKeys = Set<Key>()
+    final class Buttons {
+        let windowPtr: OpaquePointer
 
-        func process(windowPtr: OpaquePointer) {
+        private var observers = [Key : [Observer]]()
+        private var downKeys = Set<Key>()
+
+        init(windowPtr: OpaquePointer) {
+            self.windowPtr = windowPtr
+        }
+
+        func process() {
             var mapper = StateToEventMapper(downKeys: downKeys)
 
             observers.forEach { key, keyObservers in

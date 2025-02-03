@@ -1,10 +1,16 @@
 import C_GLFW
 import OpenCombineShim
 
-final class InputProcessor: Sendable {
-    let buttons = Buttons()
+final class InputProcessor {
+    let buttons: Buttons
+    let mouse: Mouse
 
-    func process(windowPtr: OpaquePointer) {
-        buttons.process(windowPtr: windowPtr)
+    init(windowPtr: OpaquePointer) {
+        self.buttons = Buttons(windowPtr: windowPtr)
+        self.mouse = Mouse(windowPtr: windowPtr)
+    }
+
+    func process() {
+        buttons.process()
     }
 }

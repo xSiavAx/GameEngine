@@ -3,9 +3,13 @@ import OpenCombineShim
 
 extension InputProcessor {
     final class Mouse {
-        // TODO: add window?
+        let windowPtr: OpaquePointer
         var mode = Mode.normal
         nonisolated(unsafe) private var posObservers = [WeakWrapper<PosObserver>]()
+
+        init(windowPtr: OpaquePointer) {
+            self.windowPtr = windowPtr
+        }
 
         func set(window: OpaquePointer, mode: Mode) {
             mode.apply(window: window)

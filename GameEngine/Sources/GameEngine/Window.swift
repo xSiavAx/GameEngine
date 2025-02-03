@@ -11,6 +11,7 @@ final class Window {
     private let ptr: OpaquePointer
     unowned let context: WindowContext
     private(set) var size: ISize
+    let inputProcessor: InputProcessor
 
     init?(size: ISize, title: String, context: WindowContext) {
         guard let ptr: OpaquePointer = glfwCreateWindow(size.cWidth, size.cHeight, title, nil, nil) else {
@@ -19,11 +20,20 @@ final class Window {
         self.ptr = ptr
         self.context = context
         self.size = size
+        self.inputProcessor = InputProcessor(windowPtr: ptr)
         WindowsManager.shared.add(key: ptr, window: self)
     }
 
     deinit {
         WindowsManager.shared.remove(key: ptr)
+    }
+
+    func makeInputProcessor() -> InputProcessor {
+        return InputProcessor(windowPtr: ptr)
+    }
+
+    func processInput() {
+        inputProcessor.process()
     }
 
     func shouldClose() -> Bool {
@@ -47,10 +57,6 @@ final class Window {
     func didChange(size: ISize) {
         self.size = size
         context.windowDidChangeSize(self)
-    }
-
-    func processInput(_ processor: InputProcessor) {
-        processor.process(windowPtr: ptr)
     }
 
     func requestClose() {

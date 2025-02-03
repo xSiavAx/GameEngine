@@ -39,7 +39,7 @@ final class Application {
     }
 
     func bindInput() {
-        context.inputProcessor.buttons
+        window.inputProcessor.buttons
                 .addObserver(key: .ESCAPE, event: .keyUp) {  [weak self] in
                     self?.context.currentWindow?.requestClose() 
                 }
@@ -85,7 +85,7 @@ extension Application {
                 try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
 
-            cameraHelper.control.bindInput(context.inputProcessor)
+            cameraHelper.control.bindInput(window.inputProcessor)
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))

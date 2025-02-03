@@ -26,9 +26,7 @@ final class Context {
                 glDisable(C_GL_DEPTH_TEST)
             }
         }
-    }
-
-    let inputProcessor = InputProcessor()
+    }    
 
     @Published
     var viewPort: ISize = .zero {
@@ -85,7 +83,7 @@ final class Context {
     }
 
     func processInput() throws {
-        try requireCurrentWindow().processInput(inputProcessor)
+        try requireCurrentWindow().processInput()
     }
 
     func requireCurrentWindow() throws -> Window {
