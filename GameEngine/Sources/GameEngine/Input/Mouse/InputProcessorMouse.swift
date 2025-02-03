@@ -1,10 +1,8 @@
-import C_GLFW
 import OpenCombineShim
 
 extension InputProcessor {
     final class Mouse {
         let windowPtr: OpaquePointer
-        var mode = Mode.normal
         nonisolated(unsafe) private var posObservers = [WeakWrapper<PosObserver>]()
 
         init(windowPtr: OpaquePointer) {
@@ -38,20 +36,6 @@ extension InputProcessor {
             if posObservers.count == 0 {
                 // Unsubscribe
             }
-        }
-    }
-}
-
-extension InputProcessor.Mouse {
-    struct Mode: GLConstantRepresentable {
-        let gl: Int32
-
-        static let normal = m(GLFW_CURSOR_NORMAL)
-        static let hidden = m(GLFW_CURSOR_HIDDEN)
-        static let disabled = m(GLFW_CURSOR_DISABLED)
-
-        func apply(window: OpaquePointer) {
-            InputProcessor.Mode.cursor.apply(window: window, val: gl)
         }
     }
 }
