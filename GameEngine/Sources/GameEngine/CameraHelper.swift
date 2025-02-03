@@ -73,10 +73,10 @@ final class CameraControl {
 
     func bindInput(_ processor: InputProcessor) {
         func map(key: InputProcessor.Key, input: Input) {
-            processor
+            processor.buttons
                 .addObserver(key: key, event: .keyUp) { [weak self] in self?.input.remove(input) }
                 .store(in: &keysBag)
-            processor
+            processor.buttons
                 .addObserver(key: key, event: .keyDown) { [weak self] in self?.input.insert(input) }
                 .store(in: &keysBag)
         }

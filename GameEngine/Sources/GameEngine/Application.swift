@@ -3,6 +3,8 @@
 // glCullFace(GL_BACK); // cull back face
 // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
+// TODO: Move matricies multiplication from App to Shader (One calculated in Transform).
+
 import Foundation
 import simd
 import OpenCombineShim
@@ -37,7 +39,7 @@ final class Application {
     }
 
     func bindInput() {
-        context.inputProcessor
+        context.inputProcessor.buttons
                 .addObserver(key: .ESCAPE, event: .keyUp) {  [weak self] in
                     self?.context.currentWindow?.requestClose() 
                 }
@@ -84,13 +86,6 @@ extension Application {
             ])
 
             cameraHelper.control.bindInput(context.inputProcessor)
-
-            let base = float4x4(
-                SIMD4<Float>(1, 1, 1, 0),
-                SIMD4<Float>(2, 2, 2, 0),
-                SIMD4<Float>(3, 3, 3, 0),
-                SIMD4<Float>(0, 0, 0, 1)
-            )
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
