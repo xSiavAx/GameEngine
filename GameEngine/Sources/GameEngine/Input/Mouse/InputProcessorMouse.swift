@@ -1,4 +1,5 @@
 import OpenCombineShim
+import C_GLFW
 
 extension InputProcessor {
     final class Mouse {
@@ -27,15 +28,28 @@ extension InputProcessor {
         private func add(posObserver: PosObserver) {
             posObservers.append(WeakWrapper(wrappe: posObserver))
             if posObservers.count == 1 {
-                // Subscribe
+                glfwSetCursorPosCallback(windowPtr, cursopr_pos_callback)
             }
         }
 
         private func remove(posObserver: PosObserver) {
             posObservers.removeAll { $0.wrappe === posObserver }
             if posObservers.count == 0 {
-                // Unsubscribe
+                glfwSetCursorPosCallback(windowPtr, nil)
             }
         }
+
+        fileprivate func handleMousePos(x: Double, y: Double) {
+            posObservers
+                .compactMap(\.wrappe)
+                .forEach {
+                    $0.fire(x: x, y: y)
+                }
+        }
     }
+}
+
+private func cursopr_pos_callback(window: OpaquePointer?, x: Double, y: Double) {
+    guard let window, let window = WindowsManager.shared.get(key: window) else { return }
+    window.inputProcessor.mouse.handleMousePos(x: x, y: y)
 }
