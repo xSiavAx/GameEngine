@@ -106,8 +106,8 @@ extension FreeCameraControl {
         init(initialTransform: LookAtTransform) {
             let front = initialTransform.front
 
-            yaw = atan2(front.z, front.x).asDegrees
-            pitch = asin(front.y).asDegrees
+            yaw = atan2(front.z, front.x)
+            pitch = asin(front.y)
         }
 
         func updateCursor(x: Double, y: Double) {
@@ -125,25 +125,26 @@ extension FreeCameraControl {
         }
 
         private func updateYawAndPitch(sense: Float) {
-            let posDelta = sense * posDelta
+            let posDelta = sense * posDelta * 0.017 // 0.017 ~= .pi / 180 (quick degress to radians)
 
-            yaw = fmod(yaw + posDelta.x, 360.0)
+            yaw = fmod(yaw + posDelta.x, 2 * .pi)
             pitch = Self.clamped(pitch: pitch - posDelta.y)
         }
 
         private func makeDirection() -> SIMD3<Float> {
-            let radYaw = Float.degrees(yaw)
-            let radPitch = Float.degrees(pitch)
             return SIMD3(
-                cos(radYaw) * cos(radPitch),
-                sin(radPitch),
-                sin(radYaw) * cos(radPitch)
+                cos(yaw) * cos(pitch),
+                sin(pitch),
+                sin(yaw) * cos(pitch)
             ).normalized
         }
 
+        private static let topPitchLimit: Float = .pi/2 - .degrees(1) // 89
+        private static let botPitchLimit: Float = -.pi/2 + .degrees(1) // -89
+
         private static func clamped(pitch: Float) -> Float {
-            if pitch > 89 { return 89 }
-            if pitch < -89 { return -89 }
+            if pitch > topPitchLimit { return topPitchLimit }
+            if pitch < botPitchLimit { return botPitchLimit }
             return pitch
         }
     }
