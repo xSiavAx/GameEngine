@@ -5,38 +5,42 @@ protocol Transform: Sendable {
 }
 
 struct LookAtTransform: Transform {
-    var position: SIMD3<Float>
-    var front: SIMD3<Float>
-    var up: SIMD3<Float>
+    let worldUp: SIMD3<Float>
 
-    var right: SIMD3<Float> { simd_cross(front, up) }
+    var position: SIMD3<Float>
+    var front: SIMD3<Float> {
+        didSet {
+            right = Self.makeRight(front: front, worldUp: worldUp)
+            up = Self.makeUp(right: right, front: front)
+        }
+    }
+    private(set) var up: SIMD3<Float>
+    var right: SIMD3<Float>
 
     init(
         position: SIMD3<Float> = .zero, 
         front: SIMD3<Float> = .frontR, 
-        up: SIMD3<Float> = .oY
+        worldUp: SIMD3<Float> = .oY
     ) {
+        let right = Self.makeRight(front: front, worldUp: worldUp)
+
         self.position = position
         self.front = front
-        self.up = up
+        self.worldUp = worldUp
+        self.right = right
+        self.up = Self.makeUp(right: right, front: front)
+    }
+
+    private static func makeRight(front: SIMD3<Float>, worldUp: SIMD3<Float>) -> SIMD3<Float> {
+        simd_cross(front, worldUp).normalized
+    }
+
+    private static func makeUp(right: SIMD3<Float>, front: SIMD3<Float>) -> SIMD3<Float> {
+        simd_cross(right, front).normalized
     }
 
     func callAsFunction() -> float4x4 {
         return .look(at: position + front, from: position, up: up)
-    }
-
-    static func + (lhs: LookAtTransform, rhs: LookAtTransform) -> LookAtTransform {
-        var result = lhs
-
-        result.position += rhs.position
-        // result.rotation = lhs.rotation * rhs.rotation
-        // result.scale *= rhs.scale
-
-        return result
-    }
-
-    static func += (lhs: inout LookAtTransform, rhs: LookAtTransform) {
-        lhs = lhs + rhs    
     }
 }
 
