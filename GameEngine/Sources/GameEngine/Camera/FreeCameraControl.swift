@@ -2,7 +2,7 @@ import simd
 import OpenCombineShim
 import Foundation
 
-final class CameraControl {
+final class FreeCameraControl {
     var isCapturingMouse: Bool { rotation != nil }
     private var rotation: CameraRotation?
     private var input: Input = .empty
@@ -79,7 +79,7 @@ final class CameraControl {
     }
 }
 
-extension CameraControl {
+extension FreeCameraControl {
     private struct Input: OptionSet {
         let rawValue: Int
 
@@ -96,7 +96,7 @@ extension CameraControl {
     }
 }
 
-extension CameraControl {
+extension FreeCameraControl {
     private final class CameraRotation {
         private var yaw: Float
         private var pitch: Float
@@ -127,7 +127,7 @@ extension CameraControl {
         private func updateYawAndPitch(sense: Float) {
             let posDelta = sense * posDelta
 
-            yaw += posDelta.x
+            yaw = fmod(yaw + posDelta.x, 360.0)
             pitch = Self.clamped(pitch: pitch - posDelta.y)
         }
 

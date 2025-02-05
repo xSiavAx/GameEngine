@@ -2,7 +2,7 @@ import simd
 import OpenCombineShim
 
 final class CameraHelper {
-    private let control = CameraControl()
+    private let control = FreeCameraControl()
 
     @Published
     var transform = LookAtTransform()
