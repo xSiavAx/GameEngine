@@ -14,7 +14,6 @@ final class CameraHelper {
     }
 
     func config(shaderProgram: ShaderProgram) throws {
-        // TODO: Do same trick in CubeModelHelper
         let viewUniform = try shaderProgram.getUniform(name: "view") as Uniform<float4x4>
 
         $transform.sink { viewUniform.bind($0()) }.store(in: &bag)
