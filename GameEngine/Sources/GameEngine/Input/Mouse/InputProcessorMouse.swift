@@ -4,14 +4,14 @@ import C_GLFW
 extension InputProcessor {
     final class Mouse {
         let windowPtr: OpaquePointer
-        nonisolated(unsafe) private var posObservers = [WeakWrapper<PosObserver>]()
+        nonisolated(unsafe) private var posObservers = [PosObserver]()
 
         init(windowPtr: OpaquePointer) {
             self.windowPtr = windowPtr
         }
 
-        func set(window: OpaquePointer, mode: Mode) {
-            mode.apply(window: window)
+        func set(mode: Mode) {
+            mode.apply(window: windowPtr)
         }
 
         func observeCursor(_ onChange: @escaping (_ x: Double, _ y: Double) -> Void) -> AnyCancellable {
@@ -26,22 +26,21 @@ extension InputProcessor {
         }
 
         private func add(posObserver: PosObserver) {
-            posObservers.append(WeakWrapper(wrappe: posObserver))
+            posObservers.append(posObserver)
             if posObservers.count == 1 {
                 glfwSetCursorPosCallback(windowPtr, cursopr_pos_callback)
             }
         }
 
         private func remove(posObserver: PosObserver) {
-            posObservers.removeAll { $0.wrappe === posObserver }
-            if posObservers.count == 0 {
+            posObservers.removeAll { $0 === posObserver }
+            if posObservers.isEmpty {
                 glfwSetCursorPosCallback(windowPtr, nil)
             }
         }
 
         fileprivate func handleMousePos(x: Double, y: Double) {
             posObservers
-                .compactMap(\.wrappe)
                 .forEach {
                     $0.fire(x: x, y: y)
                 }

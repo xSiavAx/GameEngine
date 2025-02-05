@@ -85,7 +85,7 @@ extension Application {
                 try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
 
-            cameraHelper.control.bindInput(window.inputProcessor)
+            cameraHelper.bindInput(window.inputProcessor)
             
             // Create helper
             try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
