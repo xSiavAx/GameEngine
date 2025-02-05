@@ -2,36 +2,7 @@ import simd
 import OpenCombineShim
 import Foundation
 
-final class CameraHelper {
-    private let control = CameraControl()
-
-    @Published
-    var transform = LookAtTransform()
-
-    private var bag = Set<AnyCancellable>()
-
-    init(transform: LookAtTransform) {
-        self.transform = transform
-    }
-
-    func config(shaderProgram: ShaderProgram) throws {
-        // TODO: Do same trick in CubeModelHelper
-        let viewUniform = try shaderProgram.getUniform(name: "view") as Uniform<float4x4>
-
-        $transform.sink { viewUniform.bind($0()) }.store(in: &bag)
-    }
-
-    func bindInput(_ processor: InputProcessor) {
-        control.bindInput(processor) { [weak self] in self?.transform }
-    }
-
-    func update(delta: Float) {
-        control.update(transform: &transform, delta: delta)
-    }
-}
-
-
-private final class CameraControl {
+final class CameraControl {
     var isCapturingMouse: Bool { rotation != nil }
     private var rotation: CameraRotation?
     private var input: Input = .empty
@@ -44,7 +15,7 @@ private final class CameraControl {
         guard !input.contains(.reset) else { return transform = LookAtTransform() }
         var move = SIMD3<Float>(repeating: 0)
         
-        if !input.isEmpty { // TODO: Move to "CameraMove"
+        if !input.isEmpty {
             if input.contains(.moveForward) {
                 move += transform.front
             }
@@ -109,6 +80,23 @@ private final class CameraControl {
 }
 
 extension CameraControl {
+    private struct Input: OptionSet {
+        let rawValue: Int
+
+        static let moveForward = Input(rawValue: 1 << 0)
+        static let moveBackward = Input(rawValue: 1 << 1)
+        static let moveLeft = Input(rawValue: 1 << 2)
+        static let moveRight = Input(rawValue: 1 << 3)
+        static let moveUp = Input(rawValue: 1 << 4)
+        static let moveDown = Input(rawValue: 1 << 5)
+
+        static let reset = Input(rawValue: 1 << 30)
+
+        static let empty = Input([])
+    }
+}
+
+extension CameraControl {
     private final class CameraRotation {
         private var yaw: Float
         private var pitch: Float
@@ -169,22 +157,5 @@ extension CameraControl {
             defer { last = new }
             return last.flatMap { new - $0 }
         }
-    }
-}
-
-extension CameraControl {
-    private struct Input: OptionSet {
-        let rawValue: Int
-
-        static let moveForward = Input(rawValue: 1 << 0)
-        static let moveBackward = Input(rawValue: 1 << 1)
-        static let moveLeft = Input(rawValue: 1 << 2)
-        static let moveRight = Input(rawValue: 1 << 3)
-        static let moveUp = Input(rawValue: 1 << 4)
-        static let moveDown = Input(rawValue: 1 << 5)
-
-        static let reset = Input(rawValue: 1 << 30)
-
-        static let empty = Input([])
     }
 }
