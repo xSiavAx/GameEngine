@@ -1,4 +1,4 @@
-extension InputProcessor {
+extension InputProcessor.Buttons {
     enum KeyState {
         case press
         case release

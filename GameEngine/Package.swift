@@ -21,7 +21,7 @@ let textures = [
 let package = Package(
     name: "GameEngine",
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v11),
     ],
     dependencies: [
         .package(path: "../MapReduce"),
@@ -48,6 +48,9 @@ let package = Package(
             ],
             exclude: platform.exclude,
             resources: platform.resourceToCopy() + shaders.asShadersResources() + textures.asTextureResources(),
+            cSettings: [
+                .define("GL_SILENCE_DEPRECATION", .when(platforms: [.macOS])),
+            ],
             linkerSettings: platform.linkerSettings()
         )
     ]

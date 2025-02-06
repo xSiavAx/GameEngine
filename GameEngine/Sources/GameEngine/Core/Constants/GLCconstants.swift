@@ -1,8 +1,8 @@
 import C_GLAD
 
-// wtf???
-let C_GL_TRUE = UInt8(GL_TRUE)
-let C_GL_FALSE = UInt8(GL_FALSE)
+let C_GL_DEPTH_BUFFER_BIT = GLbitfield(GL_DEPTH_BUFFER_BIT)
+let C_GL_COLOR_BUFFER_BIT = GLbitfield(GL_COLOR_BUFFER_BIT)
+let C_GL_DEPTH_TEST = GLenum(GL_DEPTH_TEST)
 
 extension Bool {
     var gl: UInt8 { UInt8(self ? GL_TRUE : GL_FALSE) }

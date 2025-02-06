@@ -1,5 +1,6 @@
 import C_GL
 import C_GLFW
+import OpenCombineShim
 
 enum ContextError: Error {
     case initializatioError
@@ -14,11 +15,22 @@ final class Context {
     private(set) var glVersionDidConfigure = false
     private(set) var gladDidLoad = false
     var currentWindowDidSet: Bool { currentWindow != nil }
+    private var clearMask = C_GL_COLOR_BUFFER_BIT
+    var isDepthTestEnabled = false {
+        didSet {
+            if isDepthTestEnabled {
+                clearMask |= C_GL_DEPTH_BUFFER_BIT
+                glEnable(C_GL_DEPTH_TEST)
+            } else {
+                clearMask &= ~C_GL_DEPTH_BUFFER_BIT
+                glDisable(C_GL_DEPTH_TEST)
+            }
+        }
+    }    
 
-    let inputProcessor = InputProcessor()
-
-    private(set) var viewPortSize: ISize = .zero {
-        didSet { viewPortSizeDidSet() }
+    @Published
+    var viewPort: ISize = .zero {
+        didSet { glViewport(0, 0, viewPort.cWidth, viewPort.cHeight) }
     }
 
     init() throws {
@@ -55,7 +67,7 @@ final class Context {
 
     func adjustViewport() throws {
         try ensureGLReady()
-        viewPortSize = try requireCurrentWindow().size
+        viewPort = try requireCurrentWindow().size
     }
 
     func loadGlad() throws {
@@ -67,20 +79,16 @@ final class Context {
 
     func clear(color: Color) {
         glClearColor(color.cRed, color.cGreen, color.cBlue, color.cAlpha);
-        glClear(GLbitfield(GL_COLOR_BUFFER_BIT))
+        glClear(clearMask)
     }
 
     func processInput() throws {
-        try requireCurrentWindow().processInput(inputProcessor)
+        try requireCurrentWindow().processInput()
     }
 
     func requireCurrentWindow() throws -> Window {
         guard let currentWindow else { throw ContextError.currentWindowDidNotSet }
         return currentWindow
-    }
-
-    private func viewPortSizeDidSet() {
-        glViewport(0, 0, viewPortSize.cWidth, viewPortSize.cHeight);
     }
 
     deinit {
@@ -99,7 +107,7 @@ extension Context: WindowContext {
 
     func windowDidChangeSize(_ window: Window) {
         if currentWindow === window {
-            viewPortSize = window.size
+            viewPort = window.size
         }
     }
 }

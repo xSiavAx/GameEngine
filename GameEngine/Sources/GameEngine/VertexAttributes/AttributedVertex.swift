@@ -48,13 +48,13 @@ extension SIMD2: VertexAttribute where Scalar: GLType {}
 extension SIMD3: VertexAttribute where Scalar: GLType {}
 extension SIMD4: VertexAttribute where Scalar: GLType {}
 
-protocol Vertex {
+protocol AttributedVertex {
     static var attributes: [VertexAttribute.Type] { get }
 
     var attributes: [VertexAttribute] { get }
 }
 
-extension Vertex {
+extension AttributedVertex {
     static var rawSize: Int { attributes.map { $0.rawSize }.reduce(0, +) }
 
     func pack(into ptr: inout UnsafeMutableRawPointer) {
@@ -86,7 +86,7 @@ extension Vertex {
 }
 
 enum VertexPacker {
-    static func withPacked<V: Vertex>(
+    static func withPacked<V: AttributedVertex>(
         vertices: [V],
         _ block: (_ address: UnsafeRawPointer, _ size: Int) -> Void
     ) {
