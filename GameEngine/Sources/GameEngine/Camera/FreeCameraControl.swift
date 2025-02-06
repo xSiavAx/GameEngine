@@ -12,15 +12,19 @@ final class FreeCameraControl {
     var deltaScroll: Float = 0
 
     @Published
-    var fov: Float = 1.0
+    var fov: Float = 1
     
     private var keysBag = Set<AnyCancellable>()
 
     func update(transform: inout LookAtTransform, delta: Float) {
         guard !input.contains(.reset) else {
+            let resetTransform = LookAtTransform()
             fov = 1
-            deltaScroll = 0
-            transform = LookAtTransform()
+            deltaScroll = 04
+            if isCapturingMouse {
+                rotation = CameraRotation(initialTransform: resetTransform)
+            }
+            transform = resetTransform
             return
         }
         var move = SIMD3<Float>(repeating: 0)
