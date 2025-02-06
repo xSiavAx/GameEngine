@@ -1,7 +1,7 @@
 import OpenCombineShim
 
 extension InputProcessor.Mouse {
-    final class PosObserver {
+    final class PositionObserver {
         let onChange: (_ x: Double, _ y: Double) -> Void
 
         init(onChange: @escaping (_ x: Double, _ y: Double) -> Void) {

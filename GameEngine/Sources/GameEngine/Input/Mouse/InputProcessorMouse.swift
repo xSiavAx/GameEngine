@@ -4,46 +4,64 @@ import C_GLFW
 extension InputProcessor {
     final class Mouse {
         let windowPtr: OpaquePointer
-        nonisolated(unsafe) private var posObservers = [PosObserver]()
+        let cursorPosition: CursorPosition
 
         init(windowPtr: OpaquePointer) {
             self.windowPtr = windowPtr
+            self.cursorPosition = CursorPosition(
+                subscribe: { glfwSetCursorPosCallback(windowPtr, cursopr_pos_callback) },
+                unsubscribe: { glfwSetCursorPosCallback(windowPtr, nil) }
+            )
         }
 
         func set(mode: Mode) {
             mode.apply(window: windowPtr)
         }
 
-        func observeCursor(_ onChange: @escaping (_ x: Double, _ y: Double) -> Void) -> AnyCancellable {
-            let observer = PosObserver(onChange: onChange)
+        fileprivate func handleMousePos(x: Double, y: Double) {
+            cursorPosition.notify(x: x, y: y)
+        }
+    }
+}
 
-            add(posObserver: observer)
+extension InputProcessor.Mouse {
+    final class CursorPosition {
+        private var observers = [PositionObserver]()
+        var subscribe: () -> Void
+        var unsubscribe: () -> Void
+
+        init(subscribe: @escaping () -> Void, unsubscribe: @escaping () -> Void) {
+            self.subscribe = subscribe
+            self.unsubscribe = unsubscribe
+        }
+
+        func observe(_ onChange: @escaping (_ x: Double, _ y: Double) -> Void) -> AnyCancellable {
+            let observer = PositionObserver(onChange: onChange)
+
+            add(observer: observer)
 
             return observer.setOnCancel { [weak self, weak observer] in 
                 guard let self, let observer else { return }
-                remove(posObserver: observer) 
+                remove(observer: observer) 
             }
         }
 
-        private func add(posObserver: PosObserver) {
-            posObservers.append(posObserver)
-            if posObservers.count == 1 {
-                glfwSetCursorPosCallback(windowPtr, cursopr_pos_callback)
+        private func add(observer: PositionObserver) {
+            observers.append(observer)
+            if observers.count == 1 {
+                subscribe()
             }
         }
 
-        private func remove(posObserver: PosObserver) {
-            posObservers.removeAll { $0 === posObserver }
-            if posObservers.isEmpty {
-                glfwSetCursorPosCallback(windowPtr, nil)
+        private func remove(observer: PositionObserver) {
+            observers.removeAll { $0 === observer }
+            if observers.isEmpty {
+                unsubscribe()
             }
         }
 
-        fileprivate func handleMousePos(x: Double, y: Double) {
-            posObservers
-                .forEach {
-                    $0.fire(x: x, y: y)
-                }
+        fileprivate func notify(x: Double, y: Double) {
+            observers.forEach { $0.fire(x: x, y: y) }
         }
     }
 }
