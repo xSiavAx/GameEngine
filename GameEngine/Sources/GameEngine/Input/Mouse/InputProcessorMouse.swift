@@ -4,13 +4,18 @@ import C_GLFW
 extension InputProcessor {
     final class Mouse {
         let windowPtr: OpaquePointer
-        let cursorPosition: CursorPosition
+        let cursorPosition: PositionUpdatesCenter
+        let scroll: PositionUpdatesCenter
 
         init(windowPtr: OpaquePointer) {
             self.windowPtr = windowPtr
-            self.cursorPosition = CursorPosition(
+            self.cursorPosition = PositionUpdatesCenter(
                 subscribe: { glfwSetCursorPosCallback(windowPtr, cursopr_pos_callback) },
                 unsubscribe: { glfwSetCursorPosCallback(windowPtr, nil) }
+            )
+            self.scroll = PositionUpdatesCenter(
+                subscribe: { glfwSetScrollCallback(windowPtr, scroll_callback) },
+                unsubscribe: { glfwSetScrollCallback(windowPtr, nil) }
             )
         }
 
@@ -21,11 +26,15 @@ extension InputProcessor {
         fileprivate func handleMousePos(x: Double, y: Double) {
             cursorPosition.notify(x: x, y: y)
         }
+
+        fileprivate func handleScroll(x: Double, y: Double) {
+            scroll.notify(x: x, y: y)
+        }
     }
 }
 
 extension InputProcessor.Mouse {
-    final class CursorPosition {
+    final class PositionUpdatesCenter {
         private var observers = [PositionObserver]()
         var subscribe: () -> Void
         var unsubscribe: () -> Void
@@ -69,4 +78,9 @@ extension InputProcessor.Mouse {
 private func cursopr_pos_callback(window: OpaquePointer?, x: Double, y: Double) {
     guard let window, let window = WindowsManager.shared.get(key: window) else { return }
     window.inputProcessor.mouse.handleMousePos(x: x, y: y)
+}
+
+private func scroll_callback(window: OpaquePointer?, x: Double, y: Double) {
+    guard let window, let window = WindowsManager.shared.get(key: window) else { return }
+    window.inputProcessor.mouse.handleScroll(x: x, y: y)
 }

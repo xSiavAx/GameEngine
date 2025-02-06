@@ -70,7 +70,6 @@ extension Application {
 
         private var bag = Set<AnyCancellable>()
 
-
         init(context: Context, window: Window) throws {
             self.context = context
             self.window = window
@@ -95,18 +94,19 @@ extension Application {
             let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<float4x4>
             let drawHelper = try CubeModelHelper(shaderProgram: shaderProgram)
 
-            context.$viewPort
-                .map { size in Float(size.width) / Float(size.height)  }
-                .map { 
-                    float4x4.perspective(
-                        fovy: .degrees(45), 
-                        aspect: $0, 
+            cameraHelper.fov
+                .combineLatest(context.$viewPort)
+                .map { fov, size in
+                    let aspectRatio = Float(size.width) / Float(size.height)
+
+                    return float4x4.perspective(
+                        fovy: .degrees(45 * fov), 
+                        aspect: aspectRatio, 
                         near: 0.1, 
                         far: 100
                     ) 
                 }
                 .assign(to: &$projectionMatrix)
-            
 
             $projectionMatrix
                 .sink { projectionUniform.bind($0) }

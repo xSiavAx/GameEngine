@@ -7,6 +7,8 @@ final class CameraHelper {
     @Published
     var transform = LookAtTransform()
 
+    var fov: Published<Float>.Publisher { control.$fov }
+
     private var bag = Set<AnyCancellable>()
 
     init(transform: LookAtTransform) {

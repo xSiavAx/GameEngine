@@ -8,11 +8,21 @@ final class FreeCameraControl {
     private var input: Input = .empty
     var moveSpeed: Float = 20.0
     var sense: Float = 0.1
+    var scrollSense: Float = 0.05
+    var deltaScroll: Float = 0
+
+    @Published
+    var fov: Float = 1.0
     
     private var keysBag = Set<AnyCancellable>()
 
     func update(transform: inout LookAtTransform, delta: Float) {
-        guard !input.contains(.reset) else { return transform = LookAtTransform() }
+        guard !input.contains(.reset) else {
+            fov = 1
+            deltaScroll = 0
+            transform = LookAtTransform()
+            return
+        }
         var move = SIMD3<Float>(repeating: 0)
         
         if !input.isEmpty {
@@ -37,6 +47,7 @@ final class FreeCameraControl {
         }
         transform.position += move * delta * moveSpeed
         rotation?.update(transform: &transform, sense: sense)
+        adjustFov()
     }
     
     func bindInput(_ processor: InputProcessor, getCurrentTransform: @escaping () -> LookAtTransform?) {
@@ -71,11 +82,36 @@ final class FreeCameraControl {
             }
             .store(in: &keysBag)
 
-        processor.mouse
-            .observeCursor { [weak self] x, y in
+        processor.mouse.scroll
+            .observe { [weak self] x, y in
+                self?.didScroll(x: Float(x), y: Float(y))
+            }
+            .store(in: &keysBag)
+
+        processor.mouse.cursorPosition
+            .observe { [weak self] x, y in
                 self?.rotation?.updateCursor(x: x, y: y)
             }
             .store(in: &keysBag)
+    }
+
+    private func didScroll(x: Float, y: Float) {
+        deltaScroll += y
+    }
+
+    private func adjustFov() {
+        var newFov = fov + deltaScroll * scrollSense
+        defer { deltaScroll = 0 }
+
+        if newFov > 2 {
+            newFov = 2
+        }
+        if newFov < 0.1 {
+            newFov = 0.1
+        }
+        if fov != newFov {
+            fov = newFov
+        }
     }
 }
 
