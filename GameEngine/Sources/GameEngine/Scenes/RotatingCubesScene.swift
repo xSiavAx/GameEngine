@@ -48,14 +48,9 @@ final class RotatingCubesScene: Scene {
         guard let drawHelper else { return assertionFailure("Drawer not found") }
 
         vao.bind { vaoName in
-            let verticiesCount = drawHelper.bind()
-
-            vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: verticiesCount))
-
-            // ebo.bind { buffer in
-            //     buffer.add(indices, usage: .staticDraw)
-            //     vaoName.setDrawer(ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count))
-            // }
+            let drawer = drawHelper.bind()
+            
+            vaoName.setDrawer(drawHelper.bind())
         }
     }
 

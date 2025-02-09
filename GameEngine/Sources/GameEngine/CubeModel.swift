@@ -4,7 +4,6 @@ import simd
 struct CubeModelHelper {
     let vbo = GLBufferSingle(type: .array)
     let ebo = GLBufferSingle(type: .elementsArray, unbindAutomatically: false)
-    let vertices = Vertex.cubeVertices
     let textures: [Texture]
     let transformUniform: Uniform<float4x4>
 
@@ -16,7 +15,10 @@ struct CubeModelHelper {
         try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
     }
 
-    func bind() -> Int {
+    func bind() -> VertexArrayDrawer {
+        // let (vertices, indices) = Vertex.cubeVerticiesAndIndexes
+        let vertices = Vertex.cubeVertices
+
         vbo.bind { buffer in
             buffer.add(vertices: vertices, usage: .staticDraw)
 
@@ -24,7 +26,9 @@ struct CubeModelHelper {
                 attributeType.enable(location: location)
             }
         }
-        return vertices.count
+        return ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count)
+        // ebo.bind { buffer in buffer.add(indices, usage: .staticDraw) }
+        // return ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count)
     }
 
     func draw<C: Collection>(models: C, onDraw: () throws -> Void) throws where C.Element: RenderModel {
@@ -59,7 +63,7 @@ struct CubeModelHelper {
 }
 
 extension Vertex {
-    static let cubeVertices: [Vertex] = [
+    private static let cubeVertices: [Vertex] = [
         Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
         Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)),
         Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)),
@@ -102,4 +106,24 @@ extension Vertex {
         Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)),
         Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0))
     ]
+
+    private static let cubeVerticiesAndIndexes: ([Vertex], [UInt32]) = (
+        [
+            Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)), // 0 - Bottom-left-back
+            Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)), // 1 - Bottom-right-back
+            Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)), // 2 - Top-right-back
+            Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0)), // 3 - Top-left-back
+            Vertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 0.0)), // 4 - Bottom-left-front
+            Vertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 0.0)), // 5 - Bottom-right-front
+            Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(1.0, 1.0)), // 6 - Top-right-front
+            Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .init(x: 1, y: 1, z: 1), texture: .init(0.0, 1.0))  // 7 - Top-left-front
+        ], [
+            0, 1, 2, 2, 3, 0, // Back face
+            4, 5, 6, 6, 7, 4, // Front face
+            0, 1, 5, 5, 4, 0, // Bottom face
+            2, 3, 7, 7, 6, 2, // Top face
+            0, 3, 7, 7, 4, 0, // Left face
+            1, 2, 6, 6, 5, 1  // Right face
+        ]
+    )
 }
