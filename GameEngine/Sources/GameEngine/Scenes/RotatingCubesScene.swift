@@ -48,8 +48,6 @@ final class RotatingCubesScene: Scene {
         guard let drawHelper else { return assertionFailure("Drawer not found") }
 
         vao.bind { vaoName in
-            let drawer = drawHelper.bind()
-            
             vaoName.setDrawer(drawHelper.bind())
         }
     }
