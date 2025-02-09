@@ -51,22 +51,11 @@ import C_GLAD
 
 extension Application {
     final class RunLoop {
-        let vao = VertexArraySingle()
         let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
-        var drawHelper: CubeModelHelper?
-
-        private var cubes = AnyModel.cubes[0..<10]
-
-        private let cameraHelper = CameraHelper(transform: LookAtTransform(position: .zero, front: .frontR))
-
-        @Published
-        var time: Double = 0
-        @Published
-        var projectionMatrix: float4x4 = .identity
-
         let timeDelta = TimeDelta()
+        let scene: Scene = RotatingCubesScene()
 
         private var bag = Set<AnyCancellable>()
 
@@ -83,56 +72,7 @@ extension Application {
                 try Shader.load(type: .vertex, resource: "VertexShader"),
                 try Shader.load(type: .fragment, resource: "FragmentShader")
             ])
-
-            cameraHelper.bindInput(window.inputProcessor)
-            
-            // Create helper
-            try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
-            try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
-
-            try cameraHelper.config(shaderProgram: shaderProgram)
-            let projectionUniform = try shaderProgram.getUniform(name: "projection") as Uniform<float4x4>
-            let drawHelper = try CubeModelHelper(shaderProgram: shaderProgram)
-
-            cameraHelper.fov
-                .combineLatest(context.$viewPort)
-                .map { fov, size in
-                    let aspectRatio = Float(size.width) / Float(size.height)
-
-                    return float4x4.perspective(
-                        fovy: .degrees(45 * fov), 
-                        aspect: aspectRatio, 
-                        near: 0.1, 
-                        far: 100
-                    ) 
-                }
-                .assign(to: &$projectionMatrix)
-
-            $projectionMatrix
-                .sink { projectionUniform.bind($0) }
-                .store(in: &bag)
-
-            let rotationAxis = SIMD3<Float>(1.0, 0.3, 0.5).normalized
-            $time
-                .map { Float($0) }
-                .sink { [weak self] time in
-                    guard let self else { return }
-                    for i in (0..<cubes.count) {
-                        cubes[i].freeTransform.rotation = simd_quatf(angle: time + .degrees(20.0 * Float(i)), axis: rotationAxis)
-                    }
-                }
-                .store(in: &bag)
-
-            vao.bind { vaoName in
-                let verticiesCount = drawHelper.bind()
-
-                vaoName.setDrawer(ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: verticiesCount))
-                // ebo.bind { buffer in
-                //     buffer.add(indices, usage: .staticDraw)
-                //     vaoName.setDrawer(ElementsVertexArrayDrawer<UInt32>(mode: .triangles, count: indices.count))
-                // }
-            }
-            self.drawHelper = drawHelper
+            try scene.prepare(context: context, window: window, shaderProgram: shaderProgram)
         }
 
         func run() throws {
@@ -142,15 +82,8 @@ extension Application {
                 context.clear(color: .limedSpruce)
 
                 shaderProgram.use()
-                time = GLTime.now
 
-                let delta = timeDelta.update()
-
-                try drawHelper?.draw(models: cubes) {
-                    try vao.draw()
-                }
-
-                cameraHelper.update(delta: delta)
+                try scene.draw(delta:  timeDelta.update())
 
                 window.swapBuffers()
                 context.pollEvents()

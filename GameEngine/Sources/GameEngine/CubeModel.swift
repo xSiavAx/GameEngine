@@ -11,6 +11,9 @@ struct CubeModelHelper {
     init(shaderProgram: ShaderProgram) throws {
         textures = try Self.loadTextures()
         transformUniform = try shaderProgram.getUniform(name: "model")
+
+        try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
+        try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
     }
 
     func bind() -> Int {
@@ -53,24 +56,6 @@ struct CubeModelHelper {
             ),
         ]
     }
-}
-
-
-extension AnyModel {
-    static let cubes = cubePositions.map { AnyModel(freeTransform: FreeTransform(position: $0)) }
-
-    private static let cubePositions = [
-        SIMD3<Float>(0.0, 0.0, 0.0),
-        SIMD3<Float>(2.0, 5.0, -15.0),
-        SIMD3<Float>(-1.5, -2.2, -2.5),
-        SIMD3<Float>(-3.8, -2.0, -12.3),
-        SIMD3<Float>(2.4, -0.4, -3.5),
-        SIMD3<Float>(-1.7, 3.0, -7.5),
-        SIMD3<Float>(1.3, -2.0, -2.5),
-        SIMD3<Float>(1.5, 2.0, -2.5),
-        SIMD3<Float>(1.5, 0.2, -1.5),
-        SIMD3<Float>(-1.3, 1.0, -1.5)
-    ]
 }
 
 extension Vertex {
