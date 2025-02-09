@@ -46,6 +46,9 @@ struct Color {
             alpha: Int(rgba & 0xff)
         )
     }
+
+    var rgbVector: SIMD3<Float> { SIMD3(x: cRed, y: cGreen, z: cBlue) }
+    var rgbaVector: SIMD4<Float> { SIMD4(x: cRed, y: cGreen, z: cBlue, w: cAlpha) }
 }
 
 extension Color {
@@ -55,5 +58,6 @@ extension Color {
     static let black = Color(rgb: 0x000000)
     static let white = Color(rgb: 0xffffff)
 
+    static let coral = Color(rgb: 0xff804f)
     static let limedSpruce = Color(rgb: 0x334D4D)
 }
