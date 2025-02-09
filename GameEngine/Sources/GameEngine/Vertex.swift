@@ -9,11 +9,11 @@ struct Vertex: AttributedVertex {
 
     var attributes: [VertexAttribute] { [
         coords, 
-        color,
+        color.rgbVector,
         texture
-    ] }
+    ]}
 
     let coords: SIMD3<Float>
-    let color: SIMD3<Float>
+    let color: Color
     let texture: SIMD2<Float>
 }

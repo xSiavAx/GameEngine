@@ -3,7 +3,7 @@ import simd
 
 final class RotatingCubesScene: Scene {
     let vao = VertexArraySingle()
-    var drawHelper: CubeModelHelper?
+    var drawHelper: ModelHelper?
     private var cubes = cubePositions.map { AnyModel(freeTransform: FreeTransform(position: $0)) }
     private let cameraHelper = CameraHelper(transform: LookAtTransform(position: .zero, front: .frontR))
 
@@ -12,7 +12,7 @@ final class RotatingCubesScene: Scene {
     private var bag = Set<AnyCancellable>()
 
     func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
-        drawHelper = try CubeModelHelper(shaderProgram: shaderProgram)
+        drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
 
         try cameraHelper.config(shaderProgram: shaderProgram, viewPort: context.$viewPort)
         cameraHelper.bindInput(window.inputProcessor)

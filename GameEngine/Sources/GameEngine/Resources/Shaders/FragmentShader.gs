@@ -15,4 +15,5 @@ void main()
         texture(texture1, texCoord),
         0.2
     ) * vec4(ourColor, 1.0);
+    // FragColor = vec4(ourColor, 1.0);
 }
