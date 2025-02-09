@@ -3,7 +3,6 @@ import C_GLFW
 
 protocol WindowContext: AnyObject {
     func didMakeCurrent(window: Window)
-    func ensureGLReady() throws
     func windowDidChangeSize(_ window: Window)
 }
 
@@ -49,18 +48,17 @@ final class Window {
         context.didMakeCurrent(window: self)
     }
 
-    func setupResizeHandler() throws {
-        try context.ensureGLReady()
+    func requestClose() {
+        glfwSetWindowShouldClose(ptr, 1)
+    }
+
+    func setupResizeHandler() {
         glfwSetFramebufferSizeCallback(ptr, windowSizeDidChange)
     }
 
-    func didChange(size: ISize) {
+    fileprivate func didChange(size: ISize) {
         self.size = size
         context.windowDidChangeSize(self)
-    }
-
-    func requestClose() {
-        glfwSetWindowShouldClose(ptr, 1)
     }
 }
 

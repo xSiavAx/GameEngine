@@ -13,7 +13,8 @@ import OpenCombineShim
 final class Application {
     let context: Context
     let window: Window
-    var keysBag = Set<AnyCancellable>()
+
+    private var keysBag = Set<AnyCancellable>()
 
     init() throws {
         let context = try Context.make(glVersion: (major: 3, minor: 3))
@@ -22,10 +23,6 @@ final class Application {
         self.window = try context.makeWindow(size: ISize(width: 800, height: 600), title: "Hello World")
 
         try setupContext()
-        try run()
-    }
-
-    func run() throws {
         bindInput()
         _ = try RunLoop(context: context, window: window)
     }
@@ -34,11 +31,10 @@ final class Application {
         window.makeContextCurrent()
         try context.loadGlad()
         try context.adjustViewport()
-        try window.setupResizeHandler()
         context.isDepthTestEnabled = true
     }
 
-    func bindInput() {
+    private func bindInput() {
         window.inputProcessor.buttons
                 .addObserver(key: .ESCAPE, event: .keyUp) {  [weak self] in
                     self?.context.currentWindow?.requestClose() 
@@ -47,13 +43,12 @@ final class Application {
     }
 }
 
-import C_GLAD
-
 extension Application {
     final class RunLoop {
-        let shaderProgram = ShaderProgram()
         let context: Context
         let window: Window
+        
+        let shaderProgram = ShaderProgram()
         let timeDelta = TimeDelta()
         let scene: Scene = RotatingCubesScene()
 

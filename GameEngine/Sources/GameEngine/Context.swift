@@ -5,17 +5,16 @@ import OpenCombineShim
 enum ContextError: Error {
     case initializatioError
     case windowCreationError
-    case glVersionDidNotSet
     case currentWindowDidNotSet
-    case gladDidNotLoad
 }
 
 final class Context {
     private(set) var currentWindow: Window?
     private(set) var glVersionDidConfigure = false
     private(set) var gladDidLoad = false
-    var currentWindowDidSet: Bool { currentWindow != nil }
+
     private var clearMask = C_GL_COLOR_BUFFER_BIT
+
     var isDepthTestEnabled = false {
         didSet {
             if isDepthTestEnabled {
@@ -66,13 +65,18 @@ final class Context {
     }
 
     func adjustViewport() throws {
-        try ensureGLReady()
-        viewPort = try requireCurrentWindow().size
+        let window = try requireCurrentWindow()
+
+        assert(gladDidLoad, "GLAD is not loaded")
+
+        viewPort = window.size
+        window.setupResizeHandler()
     }
 
     func loadGlad() throws {
-        guard glVersionDidConfigure else { throw ContextError.glVersionDidNotSet }
-        guard currentWindowDidSet else { throw ContextError.currentWindowDidNotSet }
+        guard currentWindow != nil else { throw ContextError.currentWindowDidNotSet }
+
+        assert(glVersionDidConfigure, "GL version is not set")
         try GLAD.load()
         gladDidLoad = true
     }
@@ -99,10 +103,6 @@ final class Context {
 extension Context: WindowContext {
     func didMakeCurrent(window: Window) {
         currentWindow = window
-    }
-
-    func ensureGLReady() throws {
-        guard gladDidLoad else { throw ContextError.gladDidNotLoad }
     }
 
     func windowDidChangeSize(_ window: Window) {
