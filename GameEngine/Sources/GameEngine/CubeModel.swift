@@ -12,8 +12,8 @@ final class TexturedCubeModelHelper: BaseCubeModelHelper, ModelHelper {
     override init(shaderProgram: ShaderProgram) throws {
         textures = try Self.loadTextures()
         try super.init(shaderProgram: shaderProgram)
-        try shaderProgram.getUniform(name: "texture0").bind(Int32(0))
-        try shaderProgram.getUniform(name: "texture1").bind(Int32(1))
+        try shaderProgram.getUniform(name: "texture0").set(Int32(0))
+        try shaderProgram.getUniform(name: "texture1").set(Int32(1))
     }
 
     func bind() -> VertexArrayDrawer {
@@ -84,7 +84,7 @@ class BaseCubeModelHelper {
 
     func draw<C: Collection>(models: C, onDraw: () throws -> Void) throws where C.Element: RenderModel {
         for model in models {
-            transformUniform.bind(model.transform())
+            transformUniform.set(model.transform())
             try onDraw()
         }
     }

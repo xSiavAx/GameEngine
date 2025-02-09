@@ -19,7 +19,7 @@ final class RotatingCubesScene: Scene {
         
         bindRotationOverTime()
         bindDrawData()
-        try shaderProgram.modeUniform().bind(.texture)
+        try shaderProgram.modeUniform().set(.texture)
     }
     
     func draw(delta: Float) throws {

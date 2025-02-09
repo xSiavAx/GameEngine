@@ -1,5 +1,5 @@
 extension RawRepresentable where RawValue: UniformType {
-    func bind(location: Int32) {
-        rawValue.bind(location: location)
+    func bind(uniform location: Int32) {
+        rawValue.bind(uniform: location)
     }
 }

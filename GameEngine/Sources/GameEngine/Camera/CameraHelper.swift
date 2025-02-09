@@ -36,9 +36,9 @@ final class CameraHelper {
             }
             .assign(to: &$projectionMatrix)
 
-        $transform.sink { viewUniform.bind($0()) }.store(in: &bag)
+        $transform.sink { viewUniform.set($0()) }.store(in: &bag)
         $projectionMatrix
-            .sink { projectionUniform.bind($0) }
+            .sink { projectionUniform.set($0) }
             .store(in: &bag)
         
     }

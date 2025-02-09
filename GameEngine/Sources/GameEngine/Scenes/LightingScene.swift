@@ -16,7 +16,7 @@ final class LightingScene: Scene {
         }
 
         func draw(delta: Float) throws {
-            modeUniform?.bind(.light)
+            modeUniform?.set(.light)
             try drawHelper?.draw(models: [model]) {
                 try vao.draw()
             }
@@ -45,7 +45,7 @@ final class LightingScene: Scene {
         }
 
         func draw(delta: Float) throws {
-            modeUniform?.bind(.color)
+            modeUniform?.set(.color)
             try drawHelper?.draw(models: [model]) {
                 try vao.draw()
             }
@@ -71,7 +71,7 @@ final class LightingScene: Scene {
         try light.prepare(context: context, window: window, shaderProgram: shaderProgram)
         try subject.prepare(context: context, window: window, shaderProgram: shaderProgram)
 
-        try shaderProgram.getUniform(name: "lightColor").bind(Color.white.rgbVector)
+        try shaderProgram.getUniform(name: "lightColor").set(Color.white.rgbVector)
     }
     
     func draw(delta: Float) throws {
