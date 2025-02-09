@@ -12,13 +12,14 @@ final class RotatingCubesScene: Scene {
     private var bag = Set<AnyCancellable>()
 
     func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
-        drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
+        drawHelper = try TexturedCubeModelHelper(shaderProgram: shaderProgram)
 
         try cameraHelper.config(shaderProgram: shaderProgram, viewPort: context.$viewPort)
         cameraHelper.bindInput(window.inputProcessor)
         
         bindRotationOverTime()
         bindDrawData()
+        try shaderProgram.modeUniform().bind(.texture)
     }
     
     func draw(delta: Float) throws {

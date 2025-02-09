@@ -37,6 +37,10 @@ final class ShaderProgram {
         use()
     }
 
+    func modeUniform() throws -> Uniform<ShaderMode> {
+        return try getUniform(name: "mode")
+    }
+
     func getUniform<T>(name: String) throws -> Uniform<T> {
         let location = c_glGetUniformLocation(id, name)
         guard location != -1 else { throw ShaderProgramError.uniformNotFound(name) }

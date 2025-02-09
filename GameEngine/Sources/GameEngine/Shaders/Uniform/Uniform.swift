@@ -5,6 +5,7 @@ struct Uniform<T: UniformType> {
     let name: String
     let location: Int32
 
+    // TODO: Rename to set
     func bind(_ val: T) {
         val.bind(location: location)
     }
@@ -13,7 +14,6 @@ struct Uniform<T: UniformType> {
 protocol UniformType {
     func bind(location: Int32)
 }
-
 
 // void c_glUniform1i(GLint location, GLint v0);
 // void c_glUniform2i(GLint location, GLint v0, GLint v1);

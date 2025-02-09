@@ -6,14 +6,17 @@ final class LightingScene: Scene {
             position: .init(x: 1.2, y: 1, z: 2),
             scale: .init(repeating: 0.2)
         ))
+        var modeUniform: Uniform<ShaderMode>?
 
         func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
             drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
+            modeUniform = try shaderProgram.modeUniform()
 
             bindDrawData()
         }
 
         func draw(delta: Float) throws {
+            modeUniform?.bind(.light)
             try drawHelper?.draw(models: [model]) {
                 try vao.draw()
             }
@@ -21,7 +24,7 @@ final class LightingScene: Scene {
 
         private func bindDrawData() {
             guard let drawHelper else { return assertionFailure("Drawer not found") }
-
+            
             vao.bind { vaoName in
                 vaoName.setDrawer(drawHelper.bind())
             }
@@ -32,14 +35,17 @@ final class LightingScene: Scene {
         let vao = VertexArraySingle()
         var drawHelper: ModelHelper?
         let model = AnyModel(freeTransform: FreeTransform(position: .zero))
+        var modeUniform: Uniform<ShaderMode>?
 
         func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
             drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
+            modeUniform = try shaderProgram.modeUniform()
 
             bindDrawData()
         }
 
         func draw(delta: Float) throws {
+            modeUniform?.bind(.color)
             try drawHelper?.draw(models: [model]) {
                 try vao.draw()
             }

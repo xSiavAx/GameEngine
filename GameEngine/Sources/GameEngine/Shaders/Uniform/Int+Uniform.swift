@@ -1,7 +1,7 @@
 import Foundation
 import C_GLAD
 
-extension Int32: UniformType {
+extension Int32: UniformType, UniformComponent {
     func bind(location: Int32) {
         c_glUniform1i(location, self)
     }
