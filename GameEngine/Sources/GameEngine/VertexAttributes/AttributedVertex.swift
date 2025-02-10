@@ -33,17 +33,6 @@ extension SIMD where Self: ComponentsContainer, Scalar: GLType {
     static var rawSize: Int { componentsCount * Scalar.size }
 }
 
-extension SIMD where Scalar: GLType {
-    static var glVal: UInt32 { Scalar.glVal }
-
-    func pack(into ptr: inout UnsafeMutableRawPointer) {
-        for i in (0..<scalarCount) {
-            ptr.storeBytes(of: self[i], as: Scalar.self)
-            ptr += Scalar.size
-        }
-    }
-}
-
 extension SIMD2: VertexAttribute where Scalar: GLType {}
 extension SIMD3: VertexAttribute where Scalar: GLType {}
 extension SIMD4: VertexAttribute where Scalar: GLType {}

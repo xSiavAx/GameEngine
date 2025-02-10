@@ -50,7 +50,7 @@ extension Application {
         
         let shaderProgram = ShaderProgram()
         let timeDelta = TimeDelta()
-        let scene: Scene = LightingScene()
+        let scene: Scene = TestScene()
 
         private var bag = Set<AnyCancellable>()
 
