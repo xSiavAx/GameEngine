@@ -14,11 +14,12 @@ struct GLBufferName: GLObjectName {
         }
     }
 
-    func add<V: AttributedVertex>(
+    func add<V: PackingVertex>(
         vertices: [V],
+        properties: [KeyPath<V, PackingBoundVertexAtttribute>] = V.attributes,
         usage: GLBufferDataUsage = .staticDraw
-    ) {
-        VertexPacker.withPacked(vertices: vertices) { address, size in
+    ) -> [LinkingVertextAttribute]? {
+        VertexPacker.pack(vertices, properties: properties) { address, size in
             c_glBufferData(type.gl, GLsizeiptr(size), address, usage.gl)
         }
     }

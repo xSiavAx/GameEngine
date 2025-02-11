@@ -9,7 +9,7 @@ final class LightingScene: Scene {
         var modeUniform: Uniform<ShaderMode>?
 
         func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
-            drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
+            drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram, color: .white)
             modeUniform = try shaderProgram.modeUniform()
 
             bindDrawData()
@@ -38,7 +38,7 @@ final class LightingScene: Scene {
         var modeUniform: Uniform<ShaderMode>?
 
         func prepare(context: Context, window: Window, shaderProgram: ShaderProgram) throws {
-            drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram)
+            drawHelper = try ColorCubeModelHelper(shaderProgram: shaderProgram, color: .coral)
             modeUniform = try shaderProgram.modeUniform()
 
             bindDrawData()

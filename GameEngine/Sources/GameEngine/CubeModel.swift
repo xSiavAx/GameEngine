@@ -9,9 +9,9 @@ protocol ModelHelper {
 final class TexturedCubeModelHelper: BaseCubeModelHelper, ModelHelper {
     let textures: [Texture]
 
-    override init(shaderProgram: ShaderProgram) throws {
+    init(shaderProgram: ShaderProgram) throws {
         textures = try Self.loadTextures()
-        try super.init(shaderProgram: shaderProgram)
+        try super.init(shaderProgram: shaderProgram, color: .white)
         try shaderProgram.getUniform(name: "texture0").set(Int32(0))
         try shaderProgram.getUniform(name: "texture1").set(Int32(1))
     }
@@ -49,22 +49,19 @@ final class ColorCubeModelHelper: BaseCubeModelHelper, ModelHelper {}
 class BaseCubeModelHelper {
     let vbo = GLBufferSingle(type: .array)
     let transformUniform: Uniform<float4x4>
+    let color: Color
 
-    init(shaderProgram: ShaderProgram) throws {
-        transformUniform = try shaderProgram.getUniform(name: "model")
+    init(shaderProgram: ShaderProgram, color: Color) throws {
+        self.transformUniform = try shaderProgram.getUniform(name: "model")
+        self.color = color
     }
 
     func bind() -> VertexArrayDrawer {
-        let vertices = Vertex.cubeVertices
+        let vertices = Vertex.cubeVertices(color: color)
 
         vbo.bind { buffer in
-            buffer.add(vertices: vertices, usage: .staticDraw)
-
-            Vertex.linkAttributes(shouldNormilize: false) { location, attributeType in
-                attributeType.enable(location: location)
-            }
+            buffer.add(vertices: vertices)?.linkAndAnable()
         }
-
         return ArraysVertexArrayDrawer(mode: .triangles, first: 0, count: vertices.count)
     }
 
@@ -77,47 +74,47 @@ class BaseCubeModelHelper {
 }
 
 extension Vertex {
-    fileprivate static let cubeVertices: [Vertex] = [
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, -1.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, 0.0, -1.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, -1.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, -1.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, 0.0, -1.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, -1.0)),
+    fileprivate static func cubeVertices(color: Color = .white) -> [Vertex] { [
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, -1.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z: -0.5), texture: .init(1.0, 0.0), normal: .init(0.0, 0.0, -1.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, -1.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, -1.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(0.0, 0.0, -1.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, -1.0), color: color),
 
-        Vertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, 1.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, 0.0, 1.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, 1.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, 1.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, 0.0, 1.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, 1.0)),
+        Vertex(position: .init(x: -0.5, y: -0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, 1.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(0.0, 0.0, 1.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, 1.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 1.0), normal: .init(0.0, 0.0, 1.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z:  0.5), texture: .init(0.0, 1.0), normal: .init(0.0, 0.0, 1.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(0.0, 0.0, 1.0), color: color),
 
-        Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(-1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(-1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(-1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(-1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(-1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(-1.0, 0.0, 0.0)),
+        Vertex(position: .init(x: -0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(-1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(-1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(-1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(-1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(-1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(-1.0, 0.0, 0.0), color: color),
 
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(1.0, 0.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(1.0, 0.0, 0.0)),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(1.0, 0.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(1.0, 0.0, 0.0), color: color),
 
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, -1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, -1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, -1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, -1.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, -1.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y: -0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, -1.0, 0.0)),
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(0.0, -1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(0.0, -1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(0.0, -1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y: -0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(0.0, -1.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(0.0, -1.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y: -0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(0.0, -1.0, 0.0), color: color),
 
-        Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, 1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(1.0, 1.0), normal: .init(0.0, 1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, 1.0, 0.0)),
-        Vertex(coords: .init(x:  0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(1.0, 0.0), normal: .init(0.0, 1.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z:  0.5), color: .coral, texture: .init(0.0, 0.0), normal: .init(0.0, 1.0, 0.0)),
-        Vertex(coords: .init(x: -0.5, y:  0.5, z: -0.5), color: .coral, texture: .init(0.0, 1.0), normal: .init(0.0, 1.0, 0.0))
-    ]
+        Vertex(position: .init(x: -0.5, y:  0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(0.0, 1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z: -0.5), texture: .init(1.0, 1.0), normal: .init(0.0, 1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(0.0, 1.0, 0.0), color: color),
+        Vertex(position: .init(x:  0.5, y:  0.5, z:  0.5), texture: .init(1.0, 0.0), normal: .init(0.0, 1.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z:  0.5), texture: .init(0.0, 0.0), normal: .init(0.0, 1.0, 0.0), color: color),
+        Vertex(position: .init(x: -0.5, y:  0.5, z: -0.5), texture: .init(0.0, 1.0), normal: .init(0.0, 1.0, 0.0), color: color)
+    ] }
 }
